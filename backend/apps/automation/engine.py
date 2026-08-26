@@ -1,0 +1,734 @@
+"""The automation engine: poll mailboxes, match rules, send scheduled replies.
+
+Uses only the Python standard library for mail (imaplib/smtplib), so there are no
+extra runtime dependencies. Designed to be called on a loop by the `run_engine`
+management command (or a cron/systemd timer).
+"""
+from __future__ import annotations
+
+import email
+import imaplib
+import re
+import secrets
+import smtplib
+import string
+from datetime import timedelta
+from email.header import decode_header, make_header
+from email.message import EmailMessage as PyEmailMessage
+from email.utils import parseaddr
+from html import unescape
+
+from django.db.models import Min, Q
+from django.utils import timezone
+
+from apps.automation.models import Config
+from apps.billing.services import workspace_can_send
+from apps.mail.models import EmailMessage, normalize_subject
+from apps.mailboxes.models import Mailbox
+from apps.notifications.telegram import notify
+from apps.proxies.models import Proxy
+from apps.proxies.net import open_smtp
+from apps.rules.models import Placeholder, Rule
+from apps.security.models import SystemEvent
+
+
+# --------------------------------------------------------------------------- #
+# Connection helpers
+# --------------------------------------------------------------------------- #
+def _imap_connect(mailbox: Mailbox) -> imaplib.IMAP4:
+    if mailbox.imap_use_ssl:
+        conn = imaplib.IMAP4_SSL(mailbox.imap_host, mailbox.imap_port)
+    else:
+        conn = imaplib.IMAP4(mailbox.imap_host, mailbox.imap_port)
+    conn.login(mailbox.username, mailbox.password)
+    return conn
+
+
+def test_connection(mailbox: Mailbox) -> dict:
+    """Verify IMAP login and SMTP login without sending anything."""
+    result = {"imap": False, "smtp": False, "folders": [], "error": ""}
+    try:
+        conn = _imap_connect(mailbox)
+        try:
+            # Surfacing the folder list here is how a user confirms we actually
+            # found their Spam folder, without waiting for a poll to prove it.
+            result["folders"] = folders_to_poll(mailbox, conn)
+            conn.select("INBOX", readonly=True)
+        finally:
+            conn.logout()
+        result["imap"] = True
+    except Exception as exc:  # noqa: BLE001 - report any failure to the UI
+        result["error"] = f"IMAP: {exc}"
+        return result
+    try:
+        smtp = _smtp_connect(mailbox)
+        smtp.quit()
+        result["smtp"] = True
+    except Exception as exc:  # noqa: BLE001
+        result["error"] = f"SMTP: {exc}"
+    return result
+
+
+def _smtp_connect(mailbox: Mailbox) -> smtplib.SMTP:
+    """Open an authenticated SMTP connection.
+
+    When the mailbox has `use_proxy` on, route through a random active proxy from
+    the workspace pool, retrying a few others on failure. If proxies are configured
+    but all fail we raise (rather than silently leaking the server's direct IP); if
+    the pool is empty we fall back to a direct connection so mail still flows.
+    """
+    if not mailbox.use_proxy:
+        return open_smtp(mailbox, None)
+
+    tried: list[int] = []
+    last_exc: Exception | None = None
+    for _ in range(3):
+        proxy = Proxy.pick_random(mailbox.workspace, exclude_ids=tried)
+        if proxy is None:
+            break
+        try:
+            smtp = open_smtp(mailbox, proxy)
+            proxy.mark_ok()
+            return smtp
+        except Exception as exc:  # noqa: BLE001 - try the next proxy in the pool
+            proxy.mark_failed(str(exc))
+            tried.append(proxy.id)
+            last_exc = exc
+
+    if last_exc is not None:
+        raise last_exc
+    return open_smtp(mailbox, None)
+
+
+# --------------------------------------------------------------------------- #
+# Parsing helpers
+# --------------------------------------------------------------------------- #
+def _decode(value: str) -> str:
+    if not value:
+        return ""
+    try:
+        return str(make_header(decode_header(value)))
+    except Exception:  # noqa: BLE001
+        return value
+
+
+def _is_auto_message(msg: email.message.Message, from_addr: str) -> bool:
+    """Detect auto-responders / bulk mail so we never auto-reply to them.
+
+    Replying to another auto-responder (or a mailing list / bounce) creates a mail
+    loop, so we record the message but skip scheduling a reply. Follows RFC 3834.
+    """
+    auto = (msg.get("Auto-Submitted") or "").strip().lower()
+    if auto and auto != "no":
+        return True
+    precedence = (msg.get("Precedence") or "").strip().lower()
+    if precedence in {"bulk", "list", "junk", "auto_reply"}:
+        return True
+    if msg.get("List-Id") or msg.get("List-Unsubscribe"):
+        return True
+    local = (from_addr or "").split("@")[0].strip().lower()
+    if local in {"mailer-daemon", "postmaster", "no-reply", "noreply", "do-not-reply", "donotreply"}:
+        return True
+    return False
+
+
+def html_to_text(html: str) -> str:
+    """Flatten an HTML body into a readable plain-text alternative.
+
+    Every HTML reply ships a text/plain part alongside it (RFC 2046 multipart/
+    alternative), both because some clients refuse HTML and because a missing text
+    part is a well-known spam signal. This is deliberately dependency-free: it keeps
+    block structure as line breaks and drops everything else.
+    """
+    text = re.sub(r"(?is)<(script|style)\b.*?</\1>", "", html or "")
+    text = re.sub(r"(?i)<br\s*/?>", "\n", text)
+    text = re.sub(r"(?i)</(p|div|tr|h[1-6]|li|table)>", "\n", text)
+    text = re.sub(r"<[^>]+>", "", text)
+    text = unescape(text)
+    text = re.sub(r"[ \t]+", " ", text)
+    text = re.sub(r"\n\s*\n\s*\n+", "\n\n", text)
+    return text.strip()
+
+
+def _extract_body(msg: email.message.Message) -> str:
+    if msg.is_multipart():
+        for part in msg.walk():
+            if part.get_content_type() == "text/plain" and "attachment" not in str(
+                part.get("Content-Disposition")
+            ):
+                payload = part.get_payload(decode=True)
+                if payload:
+                    return payload.decode(part.get_content_charset() or "utf-8", "replace")
+        # Fall back to HTML stripped of tags.
+        for part in msg.walk():
+            if part.get_content_type() == "text/html":
+                payload = part.get_payload(decode=True)
+                if payload:
+                    html = payload.decode(part.get_content_charset() or "utf-8", "replace")
+                    return re.sub(r"<[^>]+>", " ", html)
+        return ""
+    payload = msg.get_payload(decode=True)
+    if payload:
+        return payload.decode(msg.get_content_charset() or "utf-8", "replace")
+    return ""
+
+
+# --------------------------------------------------------------------------- #
+# Template rendering
+# --------------------------------------------------------------------------- #
+# Random-string placeholders: {{ran_letter_10}} -> 10 random letters, resolved
+# freshly on every render so each sent email differs. The alphabet is chosen by the
+# middle word; the trailing number is the length (capped so a typo can't blow up a mail).
+_RANDOM_ALPHABETS = {
+    "letter": string.ascii_letters,
+    "lower": string.ascii_lowercase,
+    "upper": string.ascii_uppercase,
+    "digit": string.digits,
+    "number": string.digits,
+    "alnum": string.ascii_letters + string.digits,
+    "hex": "0123456789abcdef",
+}
+_RANDOM_KEY = re.compile(r"^ran_(letter|lower|upper|digit|number|alnum|hex)_(\d{1,3})$")
+_RANDOM_MAX_LEN = 256
+
+
+def _random_token(key: str):
+    """Return a random string for a ran_<kind>_<n> key, or None if it isn't one.
+
+    Uses `secrets` (CSPRNG), so tokens are unguessable — fine to use as one-time
+    codes or cache-busters, not just filler.
+    """
+    m = _RANDOM_KEY.match(key)
+    if not m:
+        return None
+    alphabet = _RANDOM_ALPHABETS[m.group(1)]
+    length = min(int(m.group(2)), _RANDOM_MAX_LEN)
+    return "".join(secrets.choice(alphabet) for _ in range(length))
+
+
+def render_template(text: str, context: dict, workspace=None) -> str:
+    """Replace {{key}} tokens using dynamic context + the workspace's Placeholders.
+
+    Also supports {{ran_letter_N}} / ran_digit_N / ran_alnum_N / ran_hex_N etc.,
+    each resolved to a fresh random string of length N at render time.
+    """
+    values = dict(context)
+    placeholders = Placeholder.objects.filter(workspace=workspace) if workspace else Placeholder.objects.none()
+    for ph in placeholders:
+        values.setdefault(ph.key, ph.static_value)
+
+    def repl(match: re.Match) -> str:
+        key = match.group(1).strip()
+        token = _random_token(key)
+        if token is not None:
+            return token
+        return str(values.get(key, match.group(0)))
+
+    return re.sub(r"\{\{\s*([\w.]+)\s*\}\}", repl, text or "")
+
+
+# --------------------------------------------------------------------------- #
+# Per-account timing
+# --------------------------------------------------------------------------- #
+# Each mailbox may set its own cadence; a blank override falls back to the
+# workspace Config, so accounts added before these fields existed are unaffected.
+
+# A tick rarely lands exactly on the interval, so without a little slack a mailbox
+# on a 30s interval polled by a 30s loop would drift to every other tick.
+POLL_TOLERANCE_SECONDS = 1
+
+
+def effective_poll_interval(mailbox: Mailbox, config: Config | None = None) -> int:
+    if mailbox.poll_interval_seconds:
+        return mailbox.poll_interval_seconds
+    return (config or Config.load(mailbox.workspace)).poll_interval_seconds
+
+
+def effective_reply_delay(mailbox: Mailbox, config: Config) -> int:
+    # `is not None` rather than truthiness: 0 minutes is a valid "reply at once".
+    if mailbox.reply_delay_minutes is not None:
+        return mailbox.reply_delay_minutes
+    return config.reply_delay_minutes
+
+
+def is_due_for_poll(mailbox: Mailbox, config: Config, now=None) -> bool:
+    if not mailbox.last_polled_at:
+        return True
+    elapsed = ((now or timezone.now()) - mailbox.last_polled_at).total_seconds()
+    return elapsed >= effective_poll_interval(mailbox, config) - POLL_TOLERANCE_SECONDS
+
+
+def next_tick_seconds() -> int:
+    """How long the engine loop should sleep: the shortest cadence in use."""
+    intervals = [
+        effective_poll_interval(m)
+        for m in Mailbox.objects.filter(is_active=True).select_related("workspace")
+    ]
+    if not intervals:
+        intervals = [Config.objects.aggregate(m=Min("poll_interval_seconds"))["m"] or 30]
+    return max(5, min(intervals))
+
+
+# --------------------------------------------------------------------------- #
+# Folder discovery
+# --------------------------------------------------------------------------- #
+# IMAP never standardised a name for the spam folder: Gmail uses "[Gmail]/Spam"
+# (localised on non-English accounts), Yahoo "Bulk Mail", Outlook "Junk", others
+# "Spam" or "Junk E-mail". So we look for the RFC 6154 \Junk special-use flag first —
+# servers set it whatever the display name — and only fall back to matching known
+# names for servers too old to advertise special-use.
+_SPAM_FLAGS = {"\\junk", "\\spam"}
+_SPAM_NAMES = {
+    "spam", "junk", "junk mail", "junkmail", "junk e-mail", "junk email",
+    "bulk", "bulk mail", "[gmail]/spam", "[google mail]/spam",
+    "inbox.spam", "inbox.junk", "inbox/spam", "inbox/junk",
+}
+# Never poll these, even if a name heuristic matches: ingesting our own sent mail
+# or a trashed/archived copy would re-reply to threads that are already handled.
+_SKIP_FLAGS = {"\\sent", "\\drafts", "\\trash", "\\all", "\\archive", "\\noselect"}
+
+# A LIST response line: (\HasNoChildren \Junk) "/" "[Gmail]/Spam"
+_LIST_LINE = re.compile(r'^\((?P<flags>[^)]*)\)\s+(?:"(?:[^"]*)"|NIL)\s+(?P<name>.*)$')
+
+# How many messages to take the first time a folder is polled. Without this, a new
+# mailbox would replay its entire history and reply to years-old mail.
+FIRST_RUN_LIMIT = 10
+
+
+def _list_folders(conn) -> list[tuple[str, set[str]]]:
+    """Return [(folder_name, lowercased_flags)] for every folder on the account."""
+    typ, data = conn.list()
+    if typ != "OK" or not data:
+        return []
+    folders = []
+    for item in data:
+        if not item:
+            continue
+        # A name sent as an IMAP literal arrives as (header_bytes, name_bytes).
+        if isinstance(item, tuple):
+            line, literal = item[0], item[1]
+        else:
+            line, literal = item, None
+        if isinstance(line, bytes):
+            line = line.decode("utf-8", "replace")
+        match = _LIST_LINE.match(line.strip())
+        if not match:
+            continue
+        flags = {f.lower() for f in match.group("flags").split()}
+        if literal is not None:
+            name = literal.decode("utf-8", "replace")
+        else:
+            name = match.group("name").strip().strip('"')
+        if name:
+            folders.append((name, flags))
+    return folders
+
+
+def detect_spam_folders(conn) -> list[str]:
+    """Find the account's spam folder(s), by special-use flag then by name."""
+    by_flag, by_name = [], []
+    for name, flags in _list_folders(conn):
+        if flags & _SKIP_FLAGS:
+            continue
+        if flags & _SPAM_FLAGS:
+            by_flag.append(name)
+        elif name.lower() in _SPAM_NAMES:
+            by_name.append(name)
+    # A flagged folder is authoritative; the name list is only a fallback.
+    return by_flag or by_name
+
+
+def folders_to_poll(mailbox: Mailbox, conn) -> list[str]:
+    """INBOX first, then the spam folder(s), then any manual extras for this account."""
+    folders = ["INBOX"]
+    if mailbox.scan_spam:
+        try:
+            folders += detect_spam_folders(conn)
+        except Exception as exc:  # noqa: BLE001 - a failed LIST must never cost us INBOX
+            SystemEvent.log("mailbox", f"Could not list folders on {mailbox.name}: {exc}",
+                            "warning", workspace=mailbox.workspace)
+    folders += mailbox.extra_folder_list
+
+    seen, ordered = set(), []
+    for folder in folders:
+        if folder.lower() not in seen:
+            seen.add(folder.lower())
+            ordered.append(folder)
+    return ordered
+
+
+def _quote_folder(folder: str) -> str:
+    """Quote a mailbox name for SELECT — names like "Bulk Mail" contain spaces."""
+    return '"%s"' % folder.replace("\\", "\\\\").replace('"', '\\"')
+
+
+def _uidvalidity(conn) -> int:
+    """The UIDVALIDITY of the currently selected folder, or 0 if unreported."""
+    typ, data = conn.response("UIDVALIDITY")
+    if data and data[0]:
+        try:
+            return int(data[0])
+        except (TypeError, ValueError):
+            pass
+    return 0
+
+
+# --------------------------------------------------------------------------- #
+# Polling
+# --------------------------------------------------------------------------- #
+def poll_mailbox(mailbox: Mailbox) -> int:
+    """Fetch new incoming messages from every watched folder, record them, and
+    schedule any auto-replies.
+
+    Returns the number of new messages ingested.
+    """
+    config = Config.load(mailbox.workspace)
+    cursors = dict(mailbox.folder_cursors or {})
+    # Mailboxes from before per-folder cursors only tracked INBOX, in last_seen_uid;
+    # seeding from it stops the first multi-folder poll replaying the inbox.
+    if "INBOX" not in cursors and mailbox.last_seen_uid:
+        cursors["INBOX"] = {"uid": mailbox.last_seen_uid}
+
+    ingested = 0
+    folder_errors: list[str] = []
+    conn = _imap_connect(mailbox)
+    try:
+        for folder in folders_to_poll(mailbox, conn):
+            try:
+                ingested += _poll_folder(mailbox, conn, folder, cursors, config)
+            except Exception as exc:  # noqa: BLE001
+                # INBOX failing means the mailbox itself is broken — let run_once
+                # record and alert on it. A secondary folder that's gone, renamed or
+                # unreadable is not worth losing the rest of the poll over.
+                if folder.upper() == "INBOX":
+                    raise
+                folder_errors.append(f"{folder}: {exc}")
+                SystemEvent.log("mailbox", f"Skipped folder '{folder}' on {mailbox.name}: {exc}",
+                                "warning", workspace=mailbox.workspace)
+    finally:
+        try:
+            conn.logout()
+        except Exception:  # noqa: BLE001
+            pass
+
+    mailbox.folder_cursors = cursors
+    mailbox.last_seen_uid = int((cursors.get("INBOX") or {}).get("uid") or 0)
+    mailbox.last_polled_at = timezone.now()
+    mailbox.last_error = "; ".join(folder_errors)
+    mailbox.save(update_fields=["last_seen_uid", "folder_cursors", "last_polled_at", "last_error"])
+    return ingested
+
+
+def _poll_folder(mailbox: Mailbox, conn, folder: str, cursors: dict, config: Config) -> int:
+    """Ingest everything new in one folder, advancing that folder's cursor."""
+    typ, _ = conn.select(_quote_folder(folder))
+    if typ != "OK":
+        raise RuntimeError(f"SELECT failed ({typ})")
+
+    state = cursors.get(folder) or {}
+    last_uid = int(state.get("uid") or 0)
+    uidvalidity = _uidvalidity(conn)
+    # A changed UIDVALIDITY means the server renumbered the folder, so our stored UID
+    # now points at nothing (RFC 3501 §2.3.1.1) — safer to restart than to skip mail.
+    if uidvalidity and state.get("uidvalidity") not in (None, uidvalidity):
+        last_uid = 0
+
+    # UIDs greater than the last one we've seen = new since last poll.
+    criterion = f"UID {last_uid + 1}:*" if last_uid else "ALL"
+    typ, data = conn.uid("search", None, criterion)
+    if typ != "OK":
+        raise RuntimeError(f"SEARCH failed ({typ})")
+    uids = [int(u) for u in data[0].split()] if data and data[0] else []
+    if not last_uid:
+        uids = uids[-FIRST_RUN_LIMIT:]
+
+    ingested = 0
+    highest = last_uid
+    for uid in uids:
+        # "UID n:*" always returns the highest UID even when it is below n.
+        if uid <= last_uid:
+            continue
+        typ, msg_data = conn.uid("fetch", str(uid), "(RFC822)")
+        if typ != "OK" or not msg_data or not msg_data[0]:
+            continue
+        raw = msg_data[0][1]
+        msg = email.message_from_bytes(raw)
+        ingested += _ingest_incoming(mailbox, uid, msg, config, folder)
+        highest = max(highest, uid)
+
+    cursors[folder] = {"uid": highest, "uidvalidity": uidvalidity}
+    return ingested
+
+
+def _ingest_incoming(mailbox: Mailbox, uid: int, msg, config: Config, folder: str = "INBOX") -> int:
+    message_id = (msg.get("Message-ID") or "").strip()
+    # De-dupe within this workspace's mail (same Message-ID could legitimately land in
+    # two different users' mailboxes). This is also what keeps a message filed in both
+    # INBOX and Spam — or moved between them between polls — from being replied to twice.
+    if message_id and EmailMessage.objects.filter(message_id=message_id, workspace=mailbox.workspace).exists():
+        return 0
+
+    subject = _decode(msg.get("Subject", ""))
+    from_name, from_addr = parseaddr(_decode(msg.get("From", "")))
+    from_name = from_name.strip()
+    body = _extract_body(msg)
+    thread_key = normalize_subject(subject)
+
+    # Link back to the sent email this is replying to, matched by subject thread.
+    original = (
+        EmailMessage.objects.filter(
+            mailbox=mailbox, direction=EmailMessage.Direction.OUTGOING, thread_key=thread_key
+        )
+        .order_by("-created_at")
+        .first()
+    )
+
+    incoming = EmailMessage.objects.create(
+        workspace=mailbox.workspace,
+        mailbox=mailbox,
+        direction=EmailMessage.Direction.INCOMING,
+        status=EmailMessage.Status.RECEIVED,
+        message_id=message_id,
+        in_reply_to=(msg.get("In-Reply-To") or "").strip(),
+        imap_uid=uid,
+        folder=folder,
+        subject=subject,
+        thread_key=thread_key,
+        from_addr=from_addr,
+        from_name=from_name,
+        to_addr=mailbox.email_address,
+        body=body[:20000],
+        reply_to_message=original,
+        received_at=timezone.now(),
+    )
+
+    # Call out the folder when it isn't the inbox — "this one was in Spam" is exactly
+    # what the user needs to know from the alert.
+    where = "" if folder.upper() == "INBOX" else f" in {folder}"
+    notify(mailbox.workspace, "received",
+           f"📥 <b>{mailbox.name}</b> received{where}:\n{subject}\nfrom {from_addr}")
+    if config.auto_reply_enabled and not _is_auto_message(msg, from_addr):
+        _maybe_schedule_reply(mailbox, incoming, config)
+    return 1
+
+
+def _sender_name(incoming: EmailMessage) -> str:
+    """A human name for {{sender_name}}: the From display name if it's a real name,
+    otherwise the email's local part cleaned up (jane.doe -> Jane Doe)."""
+    name = (incoming.from_name or "").strip().strip('"').strip()
+    # Some senders put their own address in the display-name slot; that's not a name.
+    if name and "@" not in name:
+        return name
+    local = (incoming.from_addr or "").split("@")[0]
+    return re.sub(r"[._-]+", " ", local).strip().title() or "there"
+
+
+def _maybe_schedule_reply(mailbox: Mailbox, incoming: EmailMessage, config: Config):
+    # Only the mailbox workspace's own rules can fire.
+    rules = (
+        Rule.objects.filter(is_active=True, workspace=mailbox.workspace)
+        .filter(Q(mailboxes=mailbox) | Q(mailboxes__isnull=True))
+        .distinct()
+        .select_related("template")
+        .order_by("priority", "name")
+    )
+    for rule in rules:
+        if not rule.matches(incoming.subject):
+            continue
+        template = rule.template
+        if not template.is_active:
+            continue
+        context = {
+            "sender_name": _sender_name(incoming),
+            "sender_email": incoming.from_addr,
+            "original_subject": incoming.subject,
+            "mailbox_name": mailbox.name,
+            "date": timezone.now().strftime("%A, %B %d, %Y"),
+        }
+        subject = render_template(template.subject, context, workspace=mailbox.workspace)
+        body = render_template(template.body, context, workspace=mailbox.workspace)
+        if config.signature:
+            # Two newlines read as a blank line in text, but collapse to nothing in
+            # HTML — there the separator has to be markup.
+            if template.is_html:
+                body = f"{body}<br><br>{config.signature.replace(chr(10), '<br>')}"
+            else:
+                body = f"{body}\n\n{config.signature}"
+
+        reply = EmailMessage.objects.create(
+            workspace=mailbox.workspace,
+            mailbox=mailbox,
+            direction=EmailMessage.Direction.OUTGOING,
+            status=EmailMessage.Status.SCHEDULED,
+            subject=subject,
+            thread_key=normalize_subject(subject),
+            from_addr=mailbox.email_address,
+            to_addr=incoming.from_addr,
+            body=body,
+            is_html=template.is_html,
+            matched_rule=rule,
+            reply_to_message=incoming,
+            scheduled_for=timezone.now() + timedelta(minutes=effective_reply_delay(mailbox, config)),
+        )
+        attachments = list(rule.attachments.all())
+        if attachments:
+            reply.attachments.set(attachments)
+        SystemEvent.log("engine", f"Scheduled reply to {incoming.from_addr} via rule '{rule.name}'",
+                        workspace=mailbox.workspace)
+        return  # first matching rule wins
+
+
+# --------------------------------------------------------------------------- #
+# Sending scheduled replies
+# --------------------------------------------------------------------------- #
+# Send-retry policy. A transient SMTP failure — greylisting, a rate-limit blip, a
+# dropped TLS connection — shouldn't lose a reply, which for a marketing app is the
+# reply a client is waiting on. So a failed send is re-queued with growing backoff
+# and only marked FAILED (and alerted loudly) once SEND_MAX_ATTEMPTS is spent.
+SEND_MAX_ATTEMPTS = 5
+_RETRY_BACKOFF_SECONDS = [60, 300, 900, 1800, 3600]  # 1m, 5m, 15m, 30m, 60m
+
+
+def _retry_delay(attempt: int) -> timedelta:
+    idx = min(max(attempt - 1, 0), len(_RETRY_BACKOFF_SECONDS) - 1)
+    return timedelta(seconds=_RETRY_BACKOFF_SECONDS[idx])
+
+
+def send_due_replies(workspace=None) -> int:
+    """Send scheduled outgoing messages whose delay has elapsed.
+
+    Transient failures are retried with backoff (see SEND_MAX_ATTEMPTS); a message
+    is due when its schedule time has passed AND it isn't waiting on a retry delay.
+    Pass ``workspace`` to restrict sending to a single workspace (the on-demand run).
+    """
+    now = timezone.now()
+    due = (
+        EmailMessage.objects.filter(
+            direction=EmailMessage.Direction.OUTGOING,
+            status=EmailMessage.Status.SCHEDULED,
+            scheduled_for__lte=now,
+        )
+        .filter(Q(next_attempt_at__isnull=True) | Q(next_attempt_at__lte=now))
+        .select_related("mailbox")
+    )
+    if workspace is not None:
+        due = due.filter(workspace=workspace)
+
+    sent = 0
+    for message in due:
+        # Respect toggles that may have flipped after the reply was scheduled.
+        if not message.mailbox.is_active or not Config.load(message.workspace).auto_reply_enabled:
+            continue
+        # Paywall (sending only): if the workspace owner's subscription has lapsed,
+        # leave the reply scheduled — it goes out once they pay, nothing is lost.
+        if not workspace_can_send(message.workspace):
+            continue
+
+        try:
+            _send_message(message)
+        except Exception as exc:  # noqa: BLE001
+            message.attempt_count += 1
+            message.error = str(exc)
+            if message.attempt_count >= SEND_MAX_ATTEMPTS:
+                # Out of retries — this is the loud one: a reply we could not deliver.
+                message.status = EmailMessage.Status.FAILED
+                message.next_attempt_at = None
+                notify(message.workspace, "error",
+                       f"⛔ <b>Undelivered reply</b> to {message.to_addr} after "
+                       f"{message.attempt_count} attempts:\n{message.subject}\n{exc}")
+                SystemEvent.log("engine",
+                                f"Send permanently failed to {message.to_addr} after "
+                                f"{message.attempt_count} attempts: {exc}",
+                                "error", workspace=message.workspace)
+            else:
+                # Transient — re-queue quietly, no Telegram spam for a retry.
+                message.next_attempt_at = now + _retry_delay(message.attempt_count)
+                SystemEvent.log("engine",
+                                f"Send to {message.to_addr} failed (attempt "
+                                f"{message.attempt_count}/{SEND_MAX_ATTEMPTS}), retry at "
+                                f"{timezone.localtime(message.next_attempt_at):%H:%M}: {exc}",
+                                "warning", workspace=message.workspace)
+            message.save(update_fields=["status", "attempt_count", "next_attempt_at", "error"])
+            continue
+
+        message.status = EmailMessage.Status.SENT
+        message.sent_at = timezone.now()
+        message.attempt_count += 1
+        message.error = ""
+        message.next_attempt_at = None
+        sent += 1
+        notify(message.workspace, "sent", f"📤 <b>{message.mailbox.name}</b> sent reply:\n{message.subject}\nto {message.to_addr}")
+        SystemEvent.log("engine", f"Sent reply to {message.to_addr}"
+                        + (f" (after {message.attempt_count} attempts)" if message.attempt_count > 1 else ""),
+                        "success", workspace=message.workspace)
+        message.save(update_fields=["status", "sent_at", "attempt_count", "error", "next_attempt_at"])
+    return sent
+
+
+def _send_message(message: EmailMessage):
+    mailbox = message.mailbox
+    py = PyEmailMessage()
+    py["From"] = mailbox.email_address
+    py["To"] = message.to_addr
+    py["Subject"] = message.subject
+    # Mark as an automatic reply so well-behaved responders don't reply back (RFC 3834).
+    py["Auto-Submitted"] = "auto-replied"
+    if message.reply_to_message and message.reply_to_message.message_id:
+        py["In-Reply-To"] = message.reply_to_message.message_id
+        py["References"] = message.reply_to_message.message_id
+    if message.is_html:
+        # set_content first makes text/plain the fallback part; add_alternative then
+        # appends the HTML, and clients pick the last part they can render.
+        py.set_content(html_to_text(message.body))
+        py.add_alternative(message.body, subtype="html")
+    else:
+        py.set_content(message.body)
+
+    for att in message.attachments.all():
+        try:
+            att.file.open("rb")
+            data = att.file.read()
+            att.file.close()
+            maintype, _, subtype = (att.content_type or "application/octet-stream").partition("/")
+            py.add_attachment(data, maintype=maintype, subtype=subtype or "octet-stream",
+                              filename=att.file.name.split("/")[-1])
+        except Exception:  # noqa: BLE001 - skip a missing file rather than fail the whole send
+            continue
+
+    smtp = _smtp_connect(mailbox)
+    try:
+        smtp.send_message(py)
+    finally:
+        smtp.quit()
+
+
+def run_once(workspace=None, force=False) -> dict:
+    """One full engine tick: poll due mailboxes, then send due replies.
+
+    Pass ``workspace`` to restrict the tick to a single workspace (the on-demand run
+    from the dashboard); the looping ``run_engine`` command leaves it ``None`` to
+    process every workspace. ``force`` polls every mailbox regardless of its own
+    interval — what a human pressing "Run now" expects.
+    """
+    stats = {"polled": 0, "skipped": 0, "ingested": 0, "sent": 0, "errors": []}
+    now = timezone.now()
+    mailboxes = Mailbox.objects.filter(is_active=True).select_related("workspace")
+    if workspace is not None:
+        mailboxes = mailboxes.filter(workspace=workspace)
+    for mailbox in mailboxes:
+        # The loop ticks at the shortest interval in use, so a mailbox on a slower
+        # cadence simply isn't due on most ticks.
+        if not force and not is_due_for_poll(mailbox, Config.load(mailbox.workspace), now):
+            stats["skipped"] += 1
+            continue
+        try:
+            stats["ingested"] += poll_mailbox(mailbox)
+            stats["polled"] += 1
+        except Exception as exc:  # noqa: BLE001
+            mailbox.last_error = str(exc)
+            mailbox.save(update_fields=["last_error"])
+            stats["errors"].append(f"{mailbox.name}: {exc}")
+            notify(mailbox.workspace, "error", f"⚠️ Mailbox <b>{mailbox.name}</b> poll error: {exc}")
+            SystemEvent.log("mailbox", f"Poll error on {mailbox.name}: {exc}", "error", workspace=mailbox.workspace)
+    stats["sent"] = send_due_replies(workspace=workspace)
+    return stats
