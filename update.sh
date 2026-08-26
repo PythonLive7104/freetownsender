@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Deploy / update BeastMailer.
+# Deploy / update EndTime.
 #
 #   bash update.sh
 #

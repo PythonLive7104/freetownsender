@@ -1,4 +1,4 @@
-# Deploying BeastMailer (generalautoreply.info)
+# Deploying EndTime (your-domain.com)
 
 Everything runs in Docker on a single server. Postgres is a container on the same
 box with **no published port**, so it is reachable only from the compose network —
@@ -54,8 +54,8 @@ docker compose run --rm backend python manage.py createsuperuser
 
 The important ones:
 
-- `DJANGO_ALLOWED_HOSTS=generalautoreply.info,www.generalautoreply.info`
-- `CSRF_TRUSTED_ORIGINS=https://generalautoreply.info,https://www.generalautoreply.info`
+- `DJANGO_ALLOWED_HOSTS=your-domain.com,www.your-domain.com`
+- `CSRF_TRUSTED_ORIGINS=https://your-domain.com,https://www.your-domain.com`
 - `DATABASE_URL` — host **must** be `db`, the compose service name. Inside a container
   `localhost` means that container itself, not the database. `update.sh` refuses to
   deploy if you get this wrong.
@@ -79,7 +79,7 @@ bash update.sh
 `web` serves plain HTTP on port 80. Two options:
 
 **Caddy or an existing nginx on the host** — set `HTTP_PORT=8080` in `.env` so the
-container stops competing for port 80, then reverse-proxy `generalautoreply.info` to
+container stops competing for port 80, then reverse-proxy `your-domain.com` to
 `127.0.0.1:8080`. Forward `X-Forwarded-Proto: https`; Django already trusts it via
 `SECURE_PROXY_SSL_HEADER`.
 
@@ -122,13 +122,13 @@ docker compose down                 # stop (volumes, and so data, are kept)
 ### Backups
 
 ```bash
-docker compose exec -T db pg_dump -U beastmailer beastmailer | gzip > backup-$(date +%F).sql.gz
+docker compose exec -T db pg_dump -U endtime endtime | gzip > backup-$(date +%F).sql.gz
 ```
 
 Restore:
 
 ```bash
-gunzip -c backup-2026-07-09.sql.gz | docker compose exec -T db psql -U beastmailer -d beastmailer
+gunzip -c backup-2026-07-09.sql.gz | docker compose exec -T db psql -U endtime -d endtime
 ```
 
 ## Running without Docker (local dev)

@@ -1,4 +1,4 @@
-"""Django settings for the BeastMailer Auto-Reply backend."""
+"""Django settings for the EndTime Auto-Reply backend."""
 from pathlib import Path
 import os
 

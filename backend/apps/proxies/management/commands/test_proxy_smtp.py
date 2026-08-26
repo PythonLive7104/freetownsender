@@ -154,7 +154,7 @@ class Command(BaseCommand):
     def _send(self, smtp, mailbox, proxy, send_to):
         """Deliver a real message — the only proof the whole chain works."""
         msg = EmailMessage()
-        msg["Subject"] = "BeastMailer proxy test"
+        msg["Subject"] = "EndTime proxy test"
         msg["From"] = mailbox.email_address
         msg["To"] = send_to
         msg.set_content(

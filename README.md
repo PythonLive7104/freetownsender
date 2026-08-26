@@ -1,4 +1,4 @@
-# BeastMailer Auto-Reply
+# EndTime Auto-Reply
 
 An admin webapp that connects to email accounts, watches incoming mail, and
 sends automatic replies based on subject-matching rules — so one person can

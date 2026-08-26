@@ -62,7 +62,7 @@ export default function Layout() {
   const { user, logout, completeOnboarding } = useAuth();
   const nav = useNavigate();
   const { pathname } = useLocation();
-  const [title, sub] = TITLES[pathname] || ["BeastMailer Auto-Reply", ""];
+  const [title, sub] = TITLES[pathname] || ["EndTime Auto-Reply", ""];
   const [navOpen, setNavOpen] = useState(false);
   const [guideOpen, setGuideOpen] = useState(false);
 
@@ -87,9 +87,9 @@ export default function Layout() {
       <div className={`nav-backdrop ${navOpen ? "show" : ""}`} onClick={() => setNavOpen(false)} />
       <aside className={`sidebar ${navOpen ? "open" : ""}`}>
         <div className="brand">
-          <div className="brand-logo"><Icon.mailbox /></div>
+          <div className="brand-logo"><Icon.hourglass /></div>
           <div>
-            <div className="brand-name">BeastMailer <span className="nowrap">Auto-Reply</span></div>
+            <div className="brand-name">EndTime <span className="nowrap">Auto-Reply</span></div>
             <div className="brand-sub">Admin Panel</div>
           </div>
           <button className="btn icon-btn nav-close" onClick={() => setNavOpen(false)} title="Close menu">

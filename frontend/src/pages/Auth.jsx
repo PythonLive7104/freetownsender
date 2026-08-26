@@ -38,9 +38,9 @@ export default function Auth({ mode = "login" }) {
 
       <div className="auth-brand-side">
         <div className="brand" style={{ padding: 0 }}>
-          <div className="brand-logo" style={{ width: 46, height: 46 }}><Icon.mailbox /></div>
+          <div className="brand-logo" style={{ width: 46, height: 46 }}><Icon.hourglass /></div>
           <div>
-            <div className="brand-name" style={{ fontSize: 18 }}>BeastMailer <span className="nowrap">Auto-Reply</span></div>
+            <div className="brand-name" style={{ fontSize: 18 }}>EndTime <span className="nowrap">Auto-Reply</span></div>
             <div className="brand-sub">Admin Panel</div>
           </div>
         </div>

@@ -33,5 +33,5 @@ class TelegramConfigViewSet(viewsets.ViewSet):
         cfg = TelegramConfig.load(active_workspace(request.user))
         token = request.data.get("bot_token") or cfg.bot_token
         chat_id = request.data.get("chat_id") or cfg.chat_id
-        ok, err = send_message(token, chat_id, "✅ <b>BeastMailer Auto-Reply</b> test message — Telegram is connected.")
+        ok, err = send_message(token, chat_id, "✅ <b>EndTime Auto-Reply</b> test message — Telegram is connected.")
         return Response({"ok": ok, "error": err}, status=200 if ok else 400)

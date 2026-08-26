@@ -92,7 +92,7 @@ def test_proxy(proxy, timeout=15) -> dict:
         ssock = ctx.wrap_socket(sock, server_hostname="api.ipify.org")
         ssock.sendall(
             b"GET /?format=text HTTP/1.0\r\nHost: api.ipify.org\r\n"
-            b"User-Agent: beastmailer\r\n\r\n"
+            b"User-Agent: endtime\r\n\r\n"
         )
         raw = b""
         while len(raw) < 65536:

@@ -43,7 +43,7 @@ export default function Configuration() {
         </div>
         <Field label="Signature (appended to every auto-reply)">
           <textarea className="textarea" value={cfg.signature} onChange={(e) => setCfg({ ...cfg, signature: e.target.value })}
-            placeholder="— Sent automatically by BeastMailer Auto-Reply" />
+            placeholder="— Sent automatically by EndTime Auto-Reply" />
         </Field>
       </div>
 

@@ -43,17 +43,17 @@ class Command(BaseCommand):
             )
 
         mb1, _ = Mailbox.objects.get_or_create(
-            workspace=ws, email_address="sales@usconstructiongroups.com",
+            workspace=ws, email_address="sales@example-client.com",
             defaults=dict(
                 name="Sales inbox", imap_host="imap.example.com", smtp_host="smtp.example.com",
-                username="sales@usconstructiongroups.com", is_active=True,
+                username="sales@example-client.com", is_active=True,
             ),
         )
         mb2, _ = Mailbox.objects.get_or_create(
-            workspace=ws, email_address="projects@usconstructiongroups.com",
+            workspace=ws, email_address="projects@example-client.com",
             defaults=dict(
                 name="Projects inbox", imap_host="imap.example.com", smtp_host="smtp.example.com",
-                username="projects@usconstructiongroups.com", is_active=True,
+                username="projects@example-client.com", is_active=True,
             ),
         )
 
@@ -76,13 +76,13 @@ class Command(BaseCommand):
             now = timezone.now()
             samples = [
                 (mb1, EmailMessage.Direction.OUTGOING, EmailMessage.Status.SENT,
-                 "Re: Project Inquiry: Ref Z3aapoBM", "matt.mcdaniel@usconstructiongroups.com"),
+                 "Re: Project Inquiry: Ref Z3aapoBM", "contact@example-client.com"),
                 (mb1, EmailMessage.Direction.INCOMING, EmailMessage.Status.RECEIVED,
                  "Grow Your Business with Outdoor Lighting", "jessica.brooks@gardenlightled.com"),
                 (mb2, EmailMessage.Direction.OUTGOING, EmailMessage.Status.SCHEDULED,
                  "Re: Grow Your Business with Outdoor Lighting", "jessica.brooks@gardenlightled.com"),
                 (mb1, EmailMessage.Direction.OUTGOING, EmailMessage.Status.SENT,
-                 "Re: Project Inquiry: Ref 2hpUhPIF", "matt.mcdaniel@usconstructiongroups.com"),
+                 "Re: Project Inquiry: Ref 2hpUhPIF", "contact@example-client.com"),
             ]
             for i, (mb, direction, status, subject, addr) in enumerate(samples):
                 incoming = direction == EmailMessage.Direction.INCOMING

@@ -3,6 +3,7 @@ const s = { fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLineca
 const Svg = (p) => <svg viewBox="0 0 24 24" {...s} {...p} />;
 
 export const Icon = {
+  hourglass: (p) => <Svg {...p}><path d="M6 2h12M6 22h12"/><path d="M8 2v4.5c0 1.2.5 2.3 1.4 3.1L12 12l-2.6 2.4A4.2 4.2 0 0 0 8 17.5V22"/><path d="M16 2v4.5c0 1.2-.5 2.3-1.4 3.1L12 12l2.6 2.4c.9.8 1.4 1.9 1.4 3.1V22"/></Svg>,
   dashboard: (p) => <Svg {...p}><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></Svg>,
   mailbox: (p) => <Svg {...p}><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></Svg>,
   reply: (p) => <Svg {...p}><path d="M9 17H7A4 4 0 0 1 3 13V7"/><path d="m8 21-5-4 5-4"/><path d="M21 7v6a4 4 0 0 1-4 4H7"/></Svg>,

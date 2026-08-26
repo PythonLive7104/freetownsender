@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Icon } from "../icons";
 
-// The full A-to-Z of BeastMailer. Each step maps to a real page so the user can
+// The full A-to-Z of EndTime. Each step maps to a real page so the user can
 // jump straight there. Order mirrors the natural setup flow.
 const STEPS = [
   {
     icon: "sparkle",
-    title: "Welcome to BeastMailer",
+    title: "Welcome to EndTime",
     lead: "Auto-reply to incoming mail, on autopilot.",
-    body: "BeastMailer watches your mailboxes and sends automatic replies based on subject-matching rules — so one person can manage many inboxes from a single dashboard. This quick tour walks you through setup from start to finish. You can replay it any time from Settings.",
+    body: "EndTime watches your mailboxes and sends automatic replies based on subject-matching rules — so one person can manage many inboxes from a single dashboard. This quick tour walks you through setup from start to finish. You can replay it any time from Settings.",
   },
   {
     icon: "mailbox",
@@ -31,7 +31,7 @@ const STEPS = [
     icon: "reply",
     title: "3. Write a reply template",
     lead: "The message that gets sent back.",
-    body: "On the Auto-reply page, craft the templates BeastMailer sends. Drop in your placeholders, and optionally attach files or tracked links. These are the bodies your rules will send.",
+    body: "On the Auto-reply page, craft the templates EndTime sends. Drop in your placeholders, and optionally attach files or tracked links. These are the bodies your rules will send.",
     to: "/auto-reply",
     cta: "Open Auto-reply",
   },
@@ -95,7 +95,7 @@ const STEPS = [
     icon: "check",
     title: "You're all set!",
     lead: "That's the whole flow, A to Z.",
-    body: "Connect a mailbox, add templates and rules, and BeastMailer handles the rest. You can reopen this guide any time from Settings → Setup guide. Happy automating!",
+    body: "Connect a mailbox, add templates and rules, and EndTime handles the rest. You can reopen this guide any time from Settings → Setup guide. Happy automating!",
   },
 ];
 
