@@ -392,7 +392,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; letter-spacing: -0.015em; }
 .chip:focus-visible { outline: none; border-color: var(--brand); color: var(--brand); }
 
 .toast {
-  position: fixed; bottom: 24px; right: 24px; z-index: 100;
+  position: fixed; bottom: 84px; right: 24px; z-index: 100;
   background: var(--bg-elevated); border: 1px solid var(--border-strong);
   border-left: 3px solid var(--success); padding: 13px 18px; border-radius: var(--radius);
   box-shadow: var(--shadow); max-width: 360px; animation: slidein 0.18s ease;
@@ -551,7 +551,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; letter-spacing: -0.015em; }
   .card:not(.stat-card) { overflow-x: auto; }
   .table { min-width: 520px; }
 
-  .toast { left: 16px; right: 16px; bottom: 16px; max-width: none; }
+  .toast { left: 16px; right: 16px; bottom: 76px; max-width: none; }
   .modal-head, .modal-body { padding: 16px; }
   .modal-foot { padding: 14px 16px; }
 
@@ -625,6 +625,110 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; letter-spacing: -0.015em; }
 @media (max-width: 640px) {
   .page-note { padding: 13px; gap: 11px; }
   .page-note-mark { display: none; }
+}
+
+/* ---------------- Help dock ---------------- */
+/* Fixed bottom-right on every page. Sits above the toast stack, which is why
+   .toast starts at 84px rather than hugging the corner. */
+.hd { position: fixed; right: 24px; bottom: 24px; z-index: 90; }
+
+.hd-toggle {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 44px; padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid var(--brand);
+  background: var(--brand); color: #04201a;
+  font-family: inherit; font-size: 13.5px; font-weight: 650;
+  cursor: pointer;
+  box-shadow: 0 10px 26px -10px var(--brand), var(--shadow-sm);
+  transition: transform 0.14s ease, filter 0.14s ease;
+}
+.hd-toggle svg { width: 18px; height: 18px; }
+.hd-toggle:hover { transform: translateY(-1px); filter: brightness(1.06); }
+.hd-toggle.open { width: 44px; padding: 0; justify-content: center; }
+
+.hd-panel {
+  position: absolute; right: 0; bottom: 56px;
+  width: 352px; max-width: calc(100vw - 32px);
+  max-height: min(560px, calc(100vh - 120px));
+  display: flex; flex-direction: column;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  animation: slidein 0.16s ease;
+}
+.hd-head {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
+  padding: 15px 16px; border-bottom: 1px solid var(--border);
+}
+.hd-title { font-weight: 650; font-size: 14.5px; }
+.hd-sub { color: var(--text-faint); font-size: 12px; margin-top: 1px; }
+.hd-body { overflow-y: auto; padding: 6px 10px 12px; }
+
+.hd-group-label {
+  font-size: 10px; letter-spacing: 0.13em; text-transform: uppercase;
+  color: var(--text-faint); font-weight: 700;
+  padding: 14px 6px 6px;
+}
+
+.hd-row {
+  display: flex; align-items: flex-start; gap: 11px;
+  width: 100%; padding: 8px; margin-bottom: 1px;
+  border: none; border-radius: var(--radius-sm);
+  background: transparent; color: var(--text);
+  font-family: inherit; text-align: left; cursor: pointer;
+  transition: background 0.14s ease;
+}
+.hd-row:hover { background: var(--surface-hover); }
+.hd-row.current { background: var(--brand-soft); }
+
+/* Numbered chip for the ordered setup steps; plain icon for everything else. */
+.hd-step {
+  flex-shrink: 0; width: 22px; height: 22px; margin-top: 1px;
+  display: grid; place-items: center; border-radius: 999px;
+  background: var(--brand); color: #04201a;
+  font-size: 11.5px; font-weight: 700;
+}
+.hd-icon {
+  flex-shrink: 0; width: 22px; height: 22px; margin-top: 1px;
+  display: grid; place-items: center; color: var(--text-faint);
+}
+.hd-icon svg { width: 16px; height: 16px; }
+.hd-row:hover .hd-icon, .hd-row.current .hd-icon { color: var(--brand); }
+
+.hd-text { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.hd-label {
+  font-size: 13.5px; font-weight: 600; line-height: 1.35;
+  display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
+}
+.hd-here {
+  font-size: 9.5px; letter-spacing: 0.07em; text-transform: uppercase;
+  font-weight: 700; color: var(--brand);
+  border: 1px solid color-mix(in srgb, var(--brand) 35%, transparent);
+  background: var(--brand-soft);
+  padding: 1px 5px; border-radius: 4px;
+}
+.hd-hint { font-size: 12px; color: var(--text-muted); line-height: 1.45; }
+
+.hd-aside {
+  margin: 9px 6px 0; padding: 9px 11px;
+  border-left: 2px solid var(--brand);
+  background: var(--brand-soft);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 12px; line-height: 1.55; color: var(--text-muted);
+}
+.hd-aside strong { color: var(--text); }
+
+.hd-foot { padding: 12px 14px; border-top: 1px solid var(--border); }
+.hd-foot .btn { width: 100%; justify-content: center; }
+
+@media (max-width: 640px) {
+  .hd { right: 16px; bottom: 16px; }
+  .hd-panel { bottom: 52px; max-height: calc(100vh - 108px); }
+  .hd-toggle-text { display: none; }
+  .hd-toggle { width: 44px; padding: 0; justify-content: center; }
 }
 
 /* ---------------- Reply templates ---------------- */

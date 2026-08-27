@@ -1,0 +1,641 @@
+===============================================================================
+
+                        E N D T I M E   A U T O - R E P L Y
+
+                              User Guide
+
+                        https://driveaccount.cloud
+
+===============================================================================
+
+This guide is written for everyday users. You do not need to know anything
+about servers, code, or email protocols to follow it.
+
+If you only have five minutes, read PART 1 and PART 2. That is enough to get
+your first automatic reply working.
+
+
+-------------------------------------------------------------------------------
+CONTENTS
+-------------------------------------------------------------------------------
+
+  PART 1   What this app does
+  PART 2   Setting up, step by step
+  PART 3   Writing replies that fill themselves in
+  PART 4   Every page, explained
+  PART 5   Checking it is working
+  PART 6   When something goes wrong
+  PART 7   Plain-English glossary
+
+
+===============================================================================
+PART 1  -  WHAT THIS APP DOES
+===============================================================================
+
+EndTime watches your email accounts and answers messages for you.
+
+You tell it two things:
+
+  1. WHAT TO LOOK FOR  - for example, any email with "Invoice" in the
+                         subject line.
+
+  2. WHAT TO SEND BACK - the message that should be sent in reply.
+
+From then on it checks your inbox around the clock. When an email arrives that
+matches, it sends your reply automatically. You do not have to be logged in,
+and your computer does not have to be switched on.
+
+One person can manage many email accounts this way, from one screen.
+
+Here is the whole idea in a picture:
+
+        Someone emails you
+                |
+                v
+        EndTime checks your inbox every few seconds
+                |
+                v
+        Does the subject line match one of your rules?
+                |
+         +------+------+
+         |             |
+        YES            NO
+         |             |
+         v             v
+    Sends your      Does nothing.
+    reply back      The email just sits
+    automatically   in your inbox as normal.
+
+IMPORTANT: EndTime never deletes, moves, or changes your emails. It only
+reads them and sends replies. Anything it does not have a rule for is left
+completely alone.
+
+
+===============================================================================
+PART 2  -  SETTING UP, STEP BY STEP
+===============================================================================
+
+There are three things to set up, and they must be done in this order,
+because each one builds on the last:
+
+        STEP 1              STEP 2              STEP 3
+     Add your inbox  -->  Write a reply  -->  Make a rule
+                                              (joins them together)
+
+Do not skip ahead. You cannot create a rule until you have a reply for it to
+send, and a reply is no use until there is an inbox to send it from.
+
+
+-------------------------------------------------------------------------------
+STEP 1  -  ADD YOUR EMAIL ACCOUNT
+-------------------------------------------------------------------------------
+
+Go to "Mailbox" in the left-hand menu, then click "Add mailbox".
+
+You will be asked for:
+
+  Display name      A name just for you, so you can tell your accounts
+                    apart. For example: "Sales inbox". Nobody else sees it.
+
+  Email address     The account you want answered.
+
+  Password          The password for that email account.
+
+  Provider          Pick your email service (Gmail, Outlook, and so on) and
+                    the technical boxes below fill themselves in.
+
+The remaining boxes - IMAP host, IMAP port, SMTP host, SMTP port - are filled
+in for you when you choose a provider. Leave them alone unless your email
+provider has told you to use something different.
+
+Two optional settings worth knowing:
+
+  Also scan Spam / Junk    Turn this on if genuine messages sometimes end up
+                           in your spam folder. EndTime will then check there
+                           too, so those get answered as well.
+
+  Poll every (seconds)     How often this inbox is checked. Leave it blank to
+                           use the standard setting.
+
+>> BEFORE YOU MOVE ON: click "Test".
+
+   This checks the address and password actually work. If it fails now, no
+   replies will ever be sent from this account, and nothing else you set up
+   will help. Fix it here first.
+
+A NOTE ON YOUR PASSWORD
+Your email password is scrambled before it is stored, using a method that
+cannot be reversed. Nobody can read it back out of the system - not other
+users, not an administrator, not even you. If you ever need to change it,
+you simply type the new one in.
+
+IF YOU USE GMAIL, OUTLOOK, OR YAHOO
+These services usually refuse your normal login password and require a
+special "app password" instead. It is free and takes about a minute to
+create in your email account's own security settings. If "Test" fails and
+you are sure the password is right, this is almost always the reason.
+
+
+-------------------------------------------------------------------------------
+STEP 2  -  WRITE THE REPLY
+-------------------------------------------------------------------------------
+
+Go to "Auto-reply" in the left-hand menu, then click "New template".
+
+  Template name     A name just for you, so you can find it later. For
+                    example: "Invoice acknowledgement".
+
+  Subject           The subject line of the reply that gets sent.
+
+  Body              The message itself.
+
+You can write a plain message and stop there. But you can also drop in tags
+that fill themselves in with real details - the sender's name, today's date,
+and so on. Those are covered in PART 3, and they are what makes an automatic
+reply feel personal instead of robotic.
+
+>> BEFORE YOU MOVE ON: click "Preview".
+
+   This shows you exactly what somebody receives, with all the tags filled
+   in with sample details. Always preview before you rely on a template.
+
+
+-------------------------------------------------------------------------------
+STEP 3  -  MAKE THE RULE
+-------------------------------------------------------------------------------
+
+This is the step that switches everything on. A rule joins your inbox to your
+reply and says when to use it.
+
+Go to "Rules" in the left-hand menu, then click "New rule".
+
+  Name              A name just for you.
+
+  Match type        How to compare the subject line. You have four choices:
+
+                      Subject contains      The word appears anywhere in the
+                                            subject. This is the one you
+                                            want almost every time.
+
+                      Subject equals        The subject must match exactly,
+                                            word for word.
+
+                      Subject starts with   The subject must begin with it.
+
+                      Subject matches regex Advanced pattern matching. Ignore
+                                            this unless you already know what
+                                            it means.
+
+  Match value       The word or phrase to look for. For example: Invoice
+
+  Case sensitive    Leave this OFF and "invoice", "Invoice" and "INVOICE"
+                    are all treated the same. This is usually what you want.
+
+  Reply template    Which of your replies to send. This is the one you
+                    wrote in Step 2.
+
+  Mailboxes         Which inboxes this rule applies to. Leave it empty and
+                    it applies to all of them.
+
+  Attachments       Any files to send along with the reply (optional).
+
+  Priority          A number. Lower numbers are checked first. The default
+                    is 100.
+
+>> HOW RULES ARE CHOSEN - THIS TRIPS PEOPLE UP
+
+   Rules are checked in order, and THE FIRST ONE THAT MATCHES WINS. Once a
+   rule matches, the ones below it are never even looked at.
+
+   So put your most specific rules first, and general catch-all rules last.
+
+   For example, if you have these two rules:
+
+       Priority 100:  subject contains "Invoice"        -> General reply
+       Priority 200:  subject contains "Invoice overdue" -> Urgent reply
+
+   ...then an email titled "Invoice overdue" gets the GENERAL reply, because
+   the first rule matched and stopped the search. To fix it, give the more
+   specific rule a lower number so it is checked first:
+
+       Priority 50:   subject contains "Invoice overdue" -> Urgent reply
+       Priority 100:  subject contains "Invoice"         -> General reply
+
+There is a test box on the Rules page. Type in a subject line and it tells
+you which rule would fire. Use it - it takes two seconds and saves confusion.
+
+
+-------------------------------------------------------------------------------
+THAT IS IT
+-------------------------------------------------------------------------------
+
+Your automatic replies are now running. Send yourself a test email with a
+matching subject line and watch it come back.
+
+Do not panic if the reply is not instant. There is a deliberate short delay
+so replies do not look machine-generated. See "Reply delay" in PART 4.
+
+
+===============================================================================
+PART 3  -  WRITING REPLIES THAT FILL THEMSELVES IN
+===============================================================================
+
+A tag is a short piece of text in double curly brackets, like this:
+
+    {{sender_name}}
+
+When the reply is sent, the tag disappears and real information takes its
+place. So if you write this:
+
+    {{greeting}} {{sender_first_name}},
+
+    Thank you for your message on {{received_date}}. We will get back to
+    you by {{business_day_plus_2}}.
+
+    Your reference is {{ticket_id}}.
+
+...somebody called Jane Doe receives this:
+
+    Good morning Jane,
+
+    Thank you for your message on Wednesday, August 26, 2026. We will get
+    back to you by Friday, August 28, 2026.
+
+    Your reference is 68D34BCA.
+
+YOU DO NOT NEED TO TYPE TAGS BY HAND. Underneath the message box there is a
+row of tags you can click, and the tag is inserted wherever your cursor is.
+Hover over any of them and a short note explains what it does.
+
+Here is everything available.
+
+
+ABOUT THE PERSON WHO WROTE IN
+-------------------------------------------------------------------------------
+  {{sender_name}}          Their full name              Jane Doe
+  {{sender_first_name}}    Just their first name        Jane
+  {{sender_last_name}}     Just their surname           Doe
+  {{sender_email}}         Their email address          jane@example.com
+  {{sender_user}}          The part before the @        jane
+  {{sender_domain}}        The part after the @         example.com
+
+
+ABOUT THEIR MESSAGE
+-------------------------------------------------------------------------------
+  {{original_subject}}     Their subject line, exactly as sent
+  {{subject_clean}}        The same, with "Re:" and "Fwd:" removed
+  {{quoted_body}}          Their message, with > in front of each line,
+                           the way a normal email reply quotes
+  {{original_body}}        Their message with no quote marks
+  {{ticket_id}}            A short reference code, e.g. 68D34BCA
+  {{received_date}}        The day they wrote
+  {{received_time}}        The time they wrote
+  {{message_id}}           A technical identifier. You will rarely need it.
+
+
+ABOUT YOU
+-------------------------------------------------------------------------------
+  {{mailbox_name}}         The name of the inbox replying
+  {{mailbox_email}}        The address the reply is sent from
+  {{mailbox_domain}}       Your own domain
+  {{workspace_name}}       Your workspace name
+  {{rule_name}}            The rule that triggered this reply
+  {{template_name}}        The name of the reply being sent
+
+
+DATE AND TIME
+-------------------------------------------------------------------------------
+  {{greeting}}             Good morning / Good afternoon / Good evening,
+                           chosen automatically from the time of day
+  {{date}}                 Wednesday, August 26, 2026
+  {{date_short}}           2026-08-26
+  {{date_us}}              08/26/2026
+  {{date_eu}}              26/08/2026
+  {{time}}                 8:03 PM
+  {{time_24}}              20:03
+  {{datetime}}             The date and time together
+  {{day_name}}             Wednesday
+  {{month_name}}           August
+  {{year}}                 2026
+  {{timezone}}             UTC
+
+
+PROMISING A DEADLINE
+-------------------------------------------------------------------------------
+You can change the number in any of these.
+
+  {{date_plus_3}}          Three days from today
+  {{date_minus_1}}         Yesterday
+  {{business_day_plus_2}}  Two WORKING days from today. Weekends are
+                           skipped, so from a Friday this lands on Tuesday,
+                           not Sunday. Use this one for "we will reply
+                           within X working days".
+
+
+RANDOM CODES
+-------------------------------------------------------------------------------
+Each of these is different in every single email sent.
+
+  {{ran_letter_10}}        10 random letters
+  {{ran_digit_6}}          6 random digits
+  {{ran_alnum_12}}         12 random letters and digits
+  {{ran_hex_8}}            8 random characters, 0-9 and a-f
+  {{uuid}}                 A unique code that never repeats
+
+
+YOUR OWN TAGS
+-------------------------------------------------------------------------------
+You can invent your own on the "Placeholders" page - see PART 4. Useful for
+anything you repeat often, like your phone number or office address.
+
+IF YOU MISTYPE A TAG, nothing breaks. It simply appears in the sent email
+exactly as you typed it, brackets and all. This is another reason to always
+use Preview before relying on a template.
+
+
+===============================================================================
+PART 4  -  EVERY PAGE, EXPLAINED
+===============================================================================
+
+The menu on the left is grouped into four sections.
+
+Every page also has a short note at the top explaining what it is for. You
+can hide it with the "Hide" button, and bring it back with "Show tips". To
+bring back all of them at once, go to Settings and click "Show again" next
+to "Page tips".
+
+
+-------------------------------------------------------------------------------
+MAIN
+-------------------------------------------------------------------------------
+
+DASHBOARD
+  Your home screen. Shows how many replies have gone out, how many are
+  waiting to send, and what has come in. Start here to confirm at a glance
+  that everything is ticking over.
+
+
+-------------------------------------------------------------------------------
+AUTOMATION  -  the parts that do the actual work
+-------------------------------------------------------------------------------
+
+MAILBOX
+  Your email accounts. Add, edit, and test them here. Covered in PART 2.
+
+AUTO-REPLY
+  Your reply templates - the messages that get sent. Covered in PART 2.
+
+RULES
+  The instructions that decide which reply is sent when. Covered in PART 2.
+  This is the page that actually switches your automation on.
+
+CONFIGURATION
+  Three settings that apply to everything:
+
+    Reply delay (minutes)     How long to wait before answering. A short
+                              delay makes replies feel human rather than
+                              machine-generated.
+
+    Poll interval (seconds)   How often your inboxes are checked. Shorter
+                              means faster replies but more work for your
+                              email provider. The standard setting is fine
+                              for almost everyone.
+
+    Signature                 Text added to the bottom of EVERY automatic
+                              reply. Put your company name and contact
+                              details here once, instead of in every
+                              template.
+
+  The starting values are sensible. Only change them if you have a reason.
+
+LISTENERS
+  A live view of what is happening right now - which inboxes are being
+  checked, when each was last checked, and what has just arrived. This is
+  the page to open when you want to see the system working, or to work out
+  why it is not.
+
+
+-------------------------------------------------------------------------------
+TOOLS  -  optional extras
+-------------------------------------------------------------------------------
+
+PLACEHOLDERS
+  Your own reusable snippets. Create one called "phone" holding your phone
+  number, and you can drop {{phone}} into any reply. Change it here later
+  and every reply that uses it updates automatically - you do not have to
+  edit each template.
+
+  You give each one a Key (the short name you type, letters and numbers
+  only), a Label, an optional Description, and the Static value - the text
+  it stands for.
+
+LINKS
+  Short web links that count clicks. Put one in a reply and this page shows
+  you how many people opened it. Useful for measuring whether anyone acts on
+  your automatic replies.
+
+  You give it a Name, a Slug (the short bit that appears in the web address),
+  and the Destination URL - the real page people should land on.
+
+ATTACHMENTS
+  Files you can send with a reply, such as a brochure or price list. Upload
+  once here, then attach it to a rule so it goes out with that rule's reply.
+
+PROXIES
+  Advanced and optional. Sends your mail out through a different internet
+  connection, which some providers require when sending in large volumes.
+
+  LEAVE THIS PAGE COMPLETELY EMPTY unless somebody has specifically given
+  you proxy details to enter. An empty Proxies page is normal and correct.
+
+
+-------------------------------------------------------------------------------
+SYSTEM  -  your account and access
+-------------------------------------------------------------------------------
+
+TEAM
+  Everything you set up lives in a "workspace". Invite colleagues here and
+  they share the same inboxes, replies, and rules.
+
+  Invite by username or email address. There are three roles:
+
+    Owner     Full control, including billing. There is one owner.
+    Admin     Can manage everything and invite others.
+    Member    Can use the system day to day.
+
+  If you belong to more than one workspace, switch between them using the
+  menu at the top right of the screen. Check which workspace you are in
+  before making changes - it is easy to edit the wrong one.
+
+SUBSCRIPTION
+  Your plan and payments. Payment is made to the wallet address shown, then
+  you paste the transaction reference so it can be matched to your account.
+  Your plan activates once the payment is confirmed.
+
+SECURITY
+  Change your password here. Below that is a log of important activity on
+  your account, such as sign-ins. Worth glancing at occasionally.
+
+TELEGRAM
+  Optional. Get a message on your phone via Telegram when mail arrives or a
+  reply is sent, so you do not have to keep this page open.
+
+  Setting it up takes two pieces of information:
+    - A bot token, which you get from @BotFather in Telegram
+    - Your Chat ID, which you get from @userinfobot in Telegram
+
+  Paste both in and click "Send test" to confirm it reaches you.
+
+SETTINGS
+  Your name and email address, switching between light and dark appearance,
+  replaying the setup guide, and bringing back hidden page tips.
+
+
+===============================================================================
+PART 5  -  CHECKING IT IS WORKING
+===============================================================================
+
+THE ONE-MINUTE TEST
+
+  1. Send yourself an email with a subject line that matches one of your
+     rules.
+  2. Open the "Listeners" page and watch it arrive.
+  3. Wait for your reply delay to pass (see Configuration).
+  4. Check the inbox you sent from. The reply should be there.
+
+WHAT TO GLANCE AT NOW AND THEN
+
+  Dashboard    Are the "sent" numbers going up as you would expect?
+  Listeners    Are your inboxes still being checked regularly?
+  Links        Is anyone clicking your tracked links?
+
+If the numbers on the Dashboard stop moving entirely for a day or more,
+something has stopped. See PART 6.
+
+
+===============================================================================
+PART 6  -  WHEN SOMETHING GOES WRONG
+===============================================================================
+
+NO REPLIES ARE BEING SENT AT ALL
+
+  Work through this in order. Nine times out of ten it is one of the first
+  three.
+
+  1. Is the rule switched on?
+     Open Rules and check the rule is marked active.
+
+  2. Is the template switched on?
+     Open Auto-reply and check the template is marked active.
+
+  3. Does the subject line actually match?
+     Use the test box on the Rules page. Type the exact subject and see
+     whether it fires. Watch for extra spaces and different spellings.
+
+  4. Is the mailbox connection still good?
+     Open Mailbox and click "Test". Passwords get changed and expire.
+
+  5. Is the inbox still being checked?
+     Open Listeners. If it has not been checked for a long time, contact
+     whoever administers your system - a background service may have
+     stopped.
+
+
+THE WRONG REPLY IS BEING SENT
+
+  Almost always the rule ordering. Remember: the first matching rule wins
+  and the rest are ignored. Give your more specific rule a LOWER priority
+  number so it gets checked first. See PART 2, Step 3.
+
+
+REPLIES ARE SLOW
+
+  Check "Reply delay" on the Configuration page - a delay is deliberate and
+  normal. Also check "Poll interval", which controls how often the inbox is
+  looked at. A reply cannot arrive faster than the next check.
+
+
+A TAG APPEARED IN THE EMAIL AS {{something}}
+
+  The tag name was mistyped, so there was nothing to substitute. Open the
+  template, delete it, and click the tag from the row beneath the message
+  box instead of typing it. Then use Preview to confirm.
+
+
+"TEST" FAILS ON A MAILBOX
+
+  - Check the password. If it is Gmail, Outlook, or Yahoo, you almost
+    certainly need an "app password" rather than your normal one. See
+    PART 2, Step 1.
+  - Check the email address for typos.
+  - If you changed the IMAP or SMTP boxes by hand, re-select your Provider
+    to reset them to the correct values.
+
+
+I HID A PAGE NOTE AND WANT IT BACK
+
+  Click "Show tips" at the top of that page. To restore all of them at once,
+  go to Settings and click "Show again" beside "Page tips".
+
+
+SOMETHING ELSE
+
+  Take a screenshot, note what you were doing, and send it to whoever
+  administers your system. The Security page's activity log and the
+  Listeners page are usually where the answer is.
+
+
+===============================================================================
+PART 7  -  PLAIN-ENGLISH GLOSSARY
+===============================================================================
+
+  APP PASSWORD    A separate password created inside your email account
+                  specifically for other programs to use. Gmail, Outlook,
+                  and Yahoo usually require one instead of your normal
+                  password. Free, and takes about a minute to set up.
+
+  ATTACHMENT      A file sent along with an email.
+
+  IMAP            The technical method used to READ your incoming email.
+                  Filled in automatically when you pick your provider.
+
+  MAILBOX         One email account that the app watches.
+
+  PLACEHOLDER     Your own reusable snippet of text, used through a tag.
+
+  POLL / POLLING  Checking an inbox for new mail. "Poll interval" is how
+                  often that happens.
+
+  PRIORITY        A number on a rule deciding the order rules are checked.
+                  Lower numbers are checked first.
+
+  RULE            The instruction linking "what to look for" to "what to
+                  send back".
+
+  SIGNATURE       Text added to the bottom of every automatic reply.
+
+  SLUG            The short readable part at the end of a web address.
+
+  SMTP            The technical method used to SEND email. Filled in
+                  automatically when you pick your provider.
+
+  TAG             Text in double curly brackets, like {{sender_name}}, that
+                  is replaced with real information when the reply is sent.
+
+  TEMPLATE        A saved reply message.
+
+  WORKSPACE       A shared space holding your inboxes, replies, and rules.
+                  Everyone invited to it sees the same things.
+
+
+===============================================================================
+
+  A FEW GOOD HABITS
+
+    - Always click "Test" after adding or changing a mailbox.
+    - Always click "Preview" before relying on a reply template.
+    - Use the test box on the Rules page before switching a rule on.
+    - Put specific rules above general ones.
+    - Check which workspace you are in before making changes.
+
+===============================================================================

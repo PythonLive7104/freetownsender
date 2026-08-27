@@ -6,6 +6,7 @@ import { useAuth } from "../auth";
 import WorkspaceSwitcher from "./WorkspaceSwitcher";
 import OnboardingGuide from "./OnboardingGuide";
 import { prefetchPage } from "../pageLoaders";
+import HelpDock from "./HelpDock";
 
 const NAV = [
   { section: "Main", items: [["/", "Dashboard", "dashboard", true]] },
@@ -163,6 +164,7 @@ export default function Layout() {
         </main>
       </div>
 
+      <HelpDock onOpenGuide={() => setGuideOpen(true)} />
       <OnboardingGuide open={guideOpen} onClose={closeGuide} />
     </div>
   );
