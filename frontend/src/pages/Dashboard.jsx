@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { api } from "../api";
 import { Icon } from "../icons";
 import { Loader, StatusBadge, useToast } from "../components/ui";
+import PageNote from "../components/PageNote";
 
 function useClock() {
   const [now, setNow] = useState(new Date());
@@ -63,6 +64,9 @@ export default function Dashboard() {
 
   return (
     <div className="grid" style={{ gap: 22 }}>
+      <PageNote id="dashboard" steps={["The figures at the top cover activity so far.", "Run now sends anything that is already due, without waiting for the next check.", "If something looks wrong, the Listeners page shows what each mailbox is doing right now."]}>
+        A live summary of what your mailboxes have been doing — how many replies went out, what is waiting to send, and what came in.
+      </PageNote>
       <section className="hero">
         <h2><Icon.sun style={{ width: 30, height: 30 }} /> {greeting(now.getHours())}</h2>
         <div className="hero-clock">

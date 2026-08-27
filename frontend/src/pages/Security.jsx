@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { api, setToken } from "../api";
 import { Field, Loader, useToast } from "../components/ui";
+import PageNote from "../components/PageNote";
 
 const LEVEL_BADGE = { info: "badge-received", success: "badge-sent", warning: "badge-scheduled", error: "badge-failed" };
 
@@ -44,6 +45,9 @@ export default function Security() {
 
   return (
     <div className="grid">
+      <PageNote id="security" steps={["Change your password here at any time.", "The log below shows sign-ins and other notable events."]}>
+        Your password, and a record of important activity on your account.
+      </PageNote>
       <div className="grid cols-4">
         {cards.map((c) => (
           <div className="card stat-card" key={c.label}>

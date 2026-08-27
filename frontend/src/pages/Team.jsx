@@ -3,6 +3,7 @@ import { api, SERVER_ORIGIN } from "../api";
 import { useAuth } from "../auth";
 import { Icon } from "../icons";
 import { Field, Loader, Modal, useToast } from "../components/ui";
+import PageNote from "../components/PageNote";
 
 const ROLE_BADGE = { owner: "badge-sent", admin: "badge-received", member: "badge-neutral" };
 
@@ -68,6 +69,9 @@ export default function Team() {
 
   return (
     <div className="grid" style={{ gap: 22 }}>
+      <PageNote id="team" steps={["Invite someone by their username or email address.", "Switch between workspaces using the menu at the top right."]}>
+        Everything you set up lives in a workspace. Invite people here and they share the same mailboxes, replies and rules.
+      </PageNote>
       {/* Members of the current workspace */}
       <div className="card">
         <div className="card-pad between">

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "../api";
 import { Icon } from "../icons";
 import { Field, Loader, Modal, Switch, useToast } from "../components/ui";
+import PageNote from "../components/PageNote";
 
 const BLANK = { label: "", kind: "socks5", host: "", port: 1080, username: "", password: "", is_active: true };
 const KIND_LABEL = { socks5: "SOCKS5", socks4: "SOCKS4", http: "HTTP" };
@@ -49,6 +50,9 @@ export default function Proxies() {
 
   return (
     <div className="grid">
+      <PageNote id="proxies" steps={["Leave this page empty unless you have been given proxy details to use.", "Press Test after adding one to check it works before relying on it."]}>
+        Optional. Sends your mail out through a different internet connection, which some providers require when sending in volume.
+      </PageNote>
       <div className="section-head">
         <span className="page-sub">
           Outgoing SMTP is routed through a random active proxy for any mailbox with “Use proxy” on.

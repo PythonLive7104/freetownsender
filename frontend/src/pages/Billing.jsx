@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "../api";
 import { Icon } from "../icons";
 import { Field, Loader, StatusBadge, useToast } from "../components/ui";
+import PageNote from "../components/PageNote";
 
 function fmtDate(v) {
   return v ? new Date(v).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" }) : "—";
@@ -51,6 +52,9 @@ export default function Billing() {
 
   return (
     <div className="grid">
+      <PageNote id="billing" steps={["Send your payment to the wallet address shown.", "Paste the transaction reference so the payment can be matched to your account.", "Your plan activates once the payment has been confirmed."]}>
+        Your plan and your payments.
+      </PageNote>
       {/* Status */}
       <div className="card card-pad">
         <div className="between">

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "../api";
 import { Icon } from "../icons";
 import { Field, Loader, Modal, Switch, useToast } from "../components/ui";
+import PageNote from "../components/PageNote";
 
 const MATCH_TYPES = [
   ["contains", "Subject contains"],
@@ -61,6 +62,9 @@ export default function Rules() {
 
   return (
     <div className="grid">
+      <PageNote id="rules" steps={["Say what to look for in the subject — a word it contains, or an exact match.", "Choose the reply template to send when it matches.", "Rules are checked from the top down and the first match wins, so put the most specific ones first."]}>
+        Rules decide which reply gets sent. Each one looks at the subject line of incoming mail and picks a template to answer with.
+      </PageNote>
       <div className="section-head">
         <span className="page-sub">{rows.length} rule{rows.length !== 1 ? "s" : ""} · first match wins (by priority)</span>
         <button className="btn btn-primary" onClick={() => setEditing({ ...BLANK })}><Icon.plus /> New rule</button>

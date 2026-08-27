@@ -5,6 +5,7 @@ import { useTheme } from "../theme";
 import { useAuth } from "../auth";
 import WorkspaceSwitcher from "./WorkspaceSwitcher";
 import OnboardingGuide from "./OnboardingGuide";
+import { prefetchPage } from "../pageLoaders";
 
 const NAV = [
   { section: "Main", items: [["/", "Dashboard", "dashboard", true]] },
@@ -103,7 +104,16 @@ export default function Layout() {
             {group.items.map(([to, label, icon, end]) => {
               const IconCmp = Icon[icon];
               return (
-                <NavLink key={to} to={to} end={end} className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}>
+                <NavLink
+                  key={to}
+                  to={to}
+                  end={end}
+                  // Start fetching the page's chunk on hover/focus, so by the time the
+                  // click registers it is usually already there.
+                  onMouseEnter={() => prefetchPage(to)}
+                  onFocus={() => prefetchPage(to)}
+                  className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
+                >
                   <IconCmp />
                   <span>{label}</span>
                 </NavLink>

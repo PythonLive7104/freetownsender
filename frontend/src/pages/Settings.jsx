@@ -4,6 +4,7 @@ import { useAuth } from "../auth";
 import { useTheme } from "../theme";
 import { Icon } from "../icons";
 import { Field, Modal, Switch, useToast } from "../components/ui";
+import PageNote, { resetPageNotes } from "../components/PageNote";
 
 export default function Settings() {
   const { user, updateProfile, deleteAccount } = useAuth();
@@ -58,6 +59,9 @@ export default function Settings() {
 
   return (
     <div className="grid" style={{ maxWidth: 760 }}>
+      <PageNote id="settings" steps={["Update your name and email address here.", "Replay the setup guide any time you want a refresher."]}>
+        Your personal details and how the app behaves for you.
+      </PageNote>
       {/* Personal data */}
       <div className="card card-pad">
         <div className="between" style={{ marginBottom: 14 }}>
@@ -100,6 +104,19 @@ export default function Settings() {
           </div>
           <button className="btn btn-ghost" onClick={() => openGuide?.()}>
             <Icon.book style={{ width: 16, height: 16 }} /> Open guide
+          </button>
+        </div>
+
+        <div className="between" style={{ padding: "12px 0" }}>
+          <div>
+            <div style={{ fontWeight: 600 }}>Page tips</div>
+            <div className="page-sub">Bring back the short note at the top of every page.</div>
+          </div>
+          <button
+            className="btn btn-ghost"
+            onClick={() => { resetPageNotes(); toast("Page tips restored — they will show again on each page"); }}
+          >
+            <Icon.sparkle style={{ width: 16, height: 16 }} /> Show again
           </button>
         </div>
 

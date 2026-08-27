@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "../api";
 import { Icon } from "../icons";
 import { Field, Loader, Switch, useToast } from "../components/ui";
+import PageNote from "../components/PageNote";
 
 export default function Telegram() {
   const [cfg, setCfg] = useState(null);
@@ -39,6 +40,9 @@ export default function Telegram() {
 
   return (
     <div className="grid" style={{ maxWidth: 680 }}>
+      <PageNote id="telegram" steps={["Create a bot in Telegram and paste its token here.", "Press Send test to check the message reaches you."]}>
+        Optional. Get a message on Telegram when mail arrives or a reply goes out, so you do not have to keep this page open.
+      </PageNote>
       <div className="card card-pad">
         <div className="between" style={{ marginBottom: 18 }}>
           <div>

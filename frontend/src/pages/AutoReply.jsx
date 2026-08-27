@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "../api";
 import { Icon } from "../icons";
 import { Field, Loader, Modal, Switch, useToast } from "../components/ui";
+import PageNote from "../components/PageNote";
 
 // Mirrors build_context() in apps/automation/engine.py. Adding a tag there means
 // adding it here too, or the client never discovers it.
@@ -147,6 +148,9 @@ export default function AutoReply() {
 
   return (
     <div className="grid">
+      <PageNote id="auto-reply" steps={["Write your reply and give it a name you will recognise later.", "Click any tag below the message box to drop in the sender's name, the date, and more.", "Press Preview to see exactly what the recipient will get."]}>
+        The messages that get sent back. Write them once here, then a rule decides when each one is used.
+      </PageNote>
       <div className="section-head">
         <span className="page-sub">{rows.length} reply template{rows.length !== 1 ? "s" : ""}</span>
         <button className="btn btn-primary" onClick={() => setEditing({ ...BLANK })}><Icon.plus /> New template</button>

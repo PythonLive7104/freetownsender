@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "../api";
 import { Icon } from "../icons";
 import { Field, Loader, Modal, Switch, useToast } from "../components/ui";
+import PageNote from "../components/PageNote";
 
 const BLANK = { key: "", label: "", description: "", static_value: "", is_dynamic: false };
 
@@ -34,6 +35,9 @@ export default function Placeholders() {
 
   return (
     <div className="grid">
+      <PageNote id="placeholders" steps={["Give it a short name and the text it should stand for.", "Use it in a reply by clicking it under the message box.", "Change it here later and every reply using it updates too."]}>
+        Your own reusable snippets. Define something once here — your company name, a phone number — and drop it into any reply.
+      </PageNote>
       <div className="section-head">
         <span className="page-sub">Use these as <code>{"{{key}}"}</code> inside reply templates</span>
         <button className="btn btn-primary" onClick={() => setEditing({ ...BLANK })}><Icon.plus /> New placeholder</button>

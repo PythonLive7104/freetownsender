@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "../api";
 import { Icon } from "../icons";
 import { Field, Loader, Modal, Switch, useToast } from "../components/ui";
+import PageNote from "../components/PageNote";
 
 const BLANK = {
   name: "", email_address: "", username: "",
@@ -129,6 +130,9 @@ export default function Mailboxes() {
 
   return (
     <div className="grid">
+      <PageNote id="mailboxes" steps={["Add an account with its email address and password.", "Press Test to confirm the details are right before relying on it.", "Passwords are encrypted, so nobody can read them back — not even you."]}>
+        The email accounts this app signs into on your behalf. It watches them for new mail and sends replies from them.
+      </PageNote>
       <div className="section-head">
         <span className="page-sub">{rows.length} mailbox{rows.length !== 1 ? "es" : ""} configured</span>
         <button className="btn btn-primary" onClick={() => setEditing({ ...BLANK })}><Icon.plus /> Add mailbox</button>

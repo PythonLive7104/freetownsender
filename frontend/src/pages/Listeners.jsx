@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { api } from "../api";
 import { Icon } from "../icons";
 import { Loader, StatusBadge, useToast } from "../components/ui";
+import PageNote from "../components/PageNote";
 
 export default function Listeners() {
   const [mailboxes, setMailboxes] = useState(null);
@@ -25,6 +26,9 @@ export default function Listeners() {
 
   return (
     <div className="grid">
+      <PageNote id="listeners" steps={["A green mark means that mailbox is being checked on schedule.", "If one stops updating, open Mailboxes and press Test on it."]}>
+        A live view of each mailbox: whether it is being watched right now, when it was last checked, and what has just arrived.
+      </PageNote>
       <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))" }}>
         {mailboxes.map((m) => (
           <div className="card card-pad" key={m.id}>

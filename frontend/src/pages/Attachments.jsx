@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { api } from "../api";
 import { Icon } from "../icons";
 import { Loader, useToast } from "../components/ui";
+import PageNote from "../components/PageNote";
 
 function humanSize(bytes) {
   if (!bytes) return "0 B";
@@ -44,6 +45,9 @@ export default function Attachments() {
 
   return (
     <div className="grid">
+      <PageNote id="attachments" steps={["Upload the file here.", "Attach it to a rule so it goes out with that rule's reply."]}>
+        Files you can send with a reply — a brochure, a price list, a form. Upload once and reuse them.
+      </PageNote>
       <div className="section-head">
         <span className="page-sub">Files you can attach to auto-replies (set them per rule on the Rules page).</span>
         <button className="btn btn-primary" onClick={() => fileInput.current?.click()} disabled={uploading}>

@@ -570,6 +570,63 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; letter-spacing: -0.015em; }
   .auth-headline { font-size: 32px; }
 }
 
+/* ---------------- Page notes ---------------- */
+/* The plain-language explainer at the top of each page. Deliberately quieter than a
+   card so it reads as guidance, not content — but the emerald edge keeps it findable. */
+.page-note {
+  display: flex; align-items: flex-start; gap: 14px;
+  background: color-mix(in srgb, var(--brand) 5%, var(--surface));
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--brand);
+  border-radius: var(--radius-lg);
+  padding: 15px 16px;
+  margin-bottom: 18px;
+}
+.page-note-mark {
+  flex-shrink: 0; width: 28px; height: 28px; border-radius: var(--radius-sm);
+  display: grid; place-items: center;
+  background: var(--brand-soft); color: var(--brand);
+}
+.page-note-mark svg { width: 15px; height: 15px; }
+.page-note-body { flex: 1; min-width: 0; }
+.page-note-lead {
+  margin: 0; color: var(--text); font-size: 13.5px; line-height: 1.6;
+}
+.page-note-steps {
+  margin: 9px 0 0; padding-left: 20px;
+  display: grid; gap: 4px;
+  color: var(--text-muted); font-size: 13px; line-height: 1.55;
+}
+.page-note-steps li::marker { color: var(--brand); font-weight: 650; }
+.page-note-hide { flex-shrink: 0; color: var(--text-faint); }
+.page-note-hide:hover { color: var(--text); }
+
+/* What Hide leaves behind: small enough to ignore, visible enough to find again.
+   justify-self keeps it from stretching across the parent .grid column. */
+.page-note-show {
+  justify-self: start;
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 5px 11px;
+  background: transparent;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text-faint);
+  font-family: inherit; font-size: 12.5px; font-weight: 550;
+  cursor: pointer;
+  transition: color 0.14s ease, border-color 0.14s ease, background 0.14s ease;
+}
+.page-note-show svg { width: 13px; height: 13px; }
+.page-note-show:hover {
+  color: var(--brand);
+  border-color: var(--brand);
+  background: var(--brand-soft);
+}
+
+@media (max-width: 640px) {
+  .page-note { padding: 13px; gap: 11px; }
+  .page-note-mark { display: none; }
+}
+
 /* ---------------- Reply templates ---------------- */
 /* Bodies are user-pasted markup: never let one size the card or the page. */
 .tpl-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
