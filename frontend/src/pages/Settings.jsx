@@ -58,7 +58,7 @@ export default function Settings() {
   };
 
   return (
-    <div className="grid" style={{ maxWidth: 760 }}>
+    <div className="grid">
       <PageNote id="settings" steps={["Update your name and email address here.", "Replay the setup guide any time you want a refresher."]}>
         Your personal details and how the app behaves for you.
       </PageNote>

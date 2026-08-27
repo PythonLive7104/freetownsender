@@ -23,7 +23,7 @@ export default function Configuration() {
   if (!cfg) return <Loader />;
 
   return (
-    <div className="grid" style={{ maxWidth: 680 }}>
+    <div className="grid">
       <PageNote id="configuration" steps={["Checking more often means faster replies, but more load on your mail provider.", "A short delay before replying makes the response feel human rather than instant.", "The defaults are safe — only change them if you have a reason to."]}>
         How often the app checks for new mail, and how long it waits before replying.
       </PageNote>

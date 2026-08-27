@@ -39,7 +39,7 @@ export default function Telegram() {
   if (!cfg) return <Loader />;
 
   return (
-    <div className="grid" style={{ maxWidth: 680 }}>
+    <div className="grid">
       <PageNote id="telegram" steps={["Create a bot in Telegram and paste its token here.", "Press Send test to check the message reaches you."]}>
         Optional. Get a message on Telegram when mail arrives or a reply goes out, so you do not have to keep this page open.
       </PageNote>
