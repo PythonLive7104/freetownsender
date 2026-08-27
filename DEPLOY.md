@@ -31,7 +31,7 @@ still works but **no mail is ever polled or sent**.
 ## First deploy
 
 ```bash
-git clone <your-repo> && cd client_sender
+git clone <your-repo> endtime && cd endtime
 
 cp .env.example .env
 nano .env          # fill in every value — see below
@@ -62,10 +62,16 @@ The important ones:
 - If the Postgres password contains `@ : / #`, percent-encode it in `DATABASE_URL`
   (`@` → `%40`). The generated password avoids those characters.
 
-⚠ **`MAIL_ENCRYPTION_KEY` must be the exact value your existing data was encrypted
-with.** It is the Fernet key protecting every mailbox and proxy password. A new key
-makes all stored credentials permanently unreadable. It has already been carried over
-from `backend/.env` into `.env`.
+⚠ **`MAIL_ENCRYPTION_KEY` is the Fernet key protecting every stored mailbox and proxy
+password.** On a brand-new install, generate a fresh one:
+
+```bash
+python3 -c "import base64, os; print(base64.urlsafe_b64encode(os.urandom(32)).decode())"
+```
+
+Back it up somewhere safe. If you are migrating data from an existing install, copy that
+install's key here instead — a different key makes every stored credential permanently
+unreadable, and there is no recovery.
 
 ## Updating
 
@@ -78,10 +84,19 @@ bash update.sh
 
 `web` serves plain HTTP on port 80. Two options:
 
-**Caddy or an existing nginx on the host** — set `HTTP_PORT=8080` in `.env` so the
-container stops competing for port 80, then reverse-proxy `your-domain.com` to
-`127.0.0.1:8080`. Forward `X-Forwarded-Proto: https`; Django already trusts it via
-`SECURE_PROXY_SSL_HEADER`.
+**Caddy on the host (recommended)** — set `HTTP_PORT=8080` in `.env` so the container
+stops competing for port 80, then let Caddy own 80/443. `Caddyfile.example` in this repo
+is ready to use:
+
+```bash
+sudo apt install -y caddy
+sudo cp Caddyfile.example /etc/caddy/Caddyfile
+sudo nano /etc/caddy/Caddyfile     # set your domains
+sudo systemctl reload caddy
+```
+
+Certificates are issued and renewed automatically. Caddy sets `X-Forwarded-Proto: https`
+itself; Django trusts it via `SECURE_PROXY_SSL_HEADER`, so nothing else is needed.
 
 **Certbot directly on the `web` container** — mount certs and add a `listen 443 ssl`
 block to `frontend/nginx.conf`.

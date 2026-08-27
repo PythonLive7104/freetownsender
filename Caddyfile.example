@@ -1,0 +1,31 @@
+# Caddy reverse proxy — terminates TLS in front of the app.
+#
+# Install to /etc/caddy/Caddyfile, replacing the domains with your own, then:
+#   sudo systemctl reload caddy
+#
+# Caddy obtains and renews Let's Encrypt certificates automatically. It needs to own
+# ports 80 and 443, so set HTTP_PORT=8080 in .env — that moves the app's own nginx off
+# port 80 and leaves it listening only on the loopback address for Caddy to reach.
+#
+# Caddy sets X-Forwarded-Proto: https on its own. The app's nginx passes it through to
+# Django, which trusts it via SECURE_PROXY_SSL_HEADER, so redirects and secure cookies
+# come out right without any extra configuration here.
+
+driveaccount.cloud, www.driveaccount.cloud {
+	encode zstd gzip
+
+	# The app's nginx: serves the SPA and proxies /api, /admin, /r/, /static, /media.
+	reverse_proxy 127.0.0.1:8080
+
+	# Uploaded attachments can be large; the app's nginx allows 25m, so don't cap
+	# below that here.
+	request_body {
+		max_size 25MB
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+	}
+}
