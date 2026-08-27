@@ -76,7 +76,7 @@ def open_smtp(mailbox, proxy=None, timeout=30):
         smtp = ProxySMTP_SSL(mailbox.smtp_host, mailbox.smtp_port, proxy=proxy, timeout=timeout)
     else:
         smtp = ProxySMTP(mailbox.smtp_host, mailbox.smtp_port, proxy=proxy, timeout=timeout)
-    smtp.login(mailbox.username, mailbox.password)
+    smtp.login(mailbox.login_username, mailbox.password)
     return smtp
 
 

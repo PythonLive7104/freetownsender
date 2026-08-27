@@ -42,7 +42,7 @@ def _imap_connect(mailbox: Mailbox) -> imaplib.IMAP4:
         conn = imaplib.IMAP4_SSL(mailbox.imap_host, mailbox.imap_port)
     else:
         conn = imaplib.IMAP4(mailbox.imap_host, mailbox.imap_port)
-    conn.login(mailbox.username, mailbox.password)
+    conn.login(mailbox.login_username, mailbox.password)
     return conn
 
 

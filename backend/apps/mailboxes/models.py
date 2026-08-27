@@ -71,6 +71,21 @@ class Mailbox(models.Model):
         return f"{self.name} <{self.email_address}>"
 
     @property
+    def login_username(self) -> str:
+        """The username to authenticate IMAP and SMTP with.
+
+        Nearly every provider wants the full email address here, and users
+        routinely leave the Username box empty expecting that to be implied.
+        An empty login is then sent and the server rejects it with something
+        that sounds like a different problem entirely — Titan answers
+        "invalid email", which reads as though the address itself is wrong.
+
+        Falling back to the address keeps those mailboxes working, including
+        ones already saved with a blank username.
+        """
+        return self.username or self.email_address
+
+    @property
     def extra_folder_list(self) -> list[str]:
         return [f.strip() for f in (self.extra_folders or "").split(",") if f.strip()]
 

@@ -52,11 +52,27 @@ const PRESETS = [
     note: "App-specific password required (appleid.apple.com → Sign-In & Security).",
   },
   {
+    id: "titan", label: "Titan Email",
+    match: ["titan.email"],
+    imap_host: "imap.titan.email", imap_port: 993, imap_use_ssl: true,
+    smtp_host: "smtp.titan.email", smtp_port: 465, smtp_use_tls: false,
+    note: "Titan hosts custom domains, so pick this from the list — it cannot be detected from your address. Username is your full email address. Port 465 is SSL, so leave STARTTLS off.",
+  },
+  {
     id: "custom", label: "Other / custom (enter manually)",
     match: [],
     note: "Enter your provider's IMAP and SMTP settings. 993 = IMAP SSL; SMTP 587 = STARTTLS, 465 = SSL.",
   },
 ];
+
+// 465 means implicit SSL and 587 means STARTTLS; pairing them the other way round
+// produces a connection that hangs or is refused, with no obvious clue why.
+const smtpEncryptionMismatch = (v) => {
+  const port = Number(v.smtp_port);
+  if (port === 465 && v.smtp_use_tls) return true;
+  if (port === 587 && !v.smtp_use_tls) return true;
+  return false;
+};
 
 const presetForEmail = (email) => {
   const domain = (email || "").split("@")[1]?.toLowerCase() || "";
@@ -220,13 +236,22 @@ function MailboxForm({ value, onChange }) {
   const onEmail = (e) => {
     const email = e.target.value;
     const next = { ...value, email_address: email };
+
+    // Track the address into the login username until the user overrides it.
+    // This used to happen only inside the preset branch below, so anyone on a
+    // custom domain (Titan, Zoho-hosted, self-hosted) matched no preset, got no
+    // username, and the server rejected the empty login — Titan reports that as
+    // "invalid email", which reads like the address is wrong when it is not.
+    if (!value.id && (!value.username || value.username === value.email_address)) {
+      next.username = email;
+    }
+
     const guess = presetForEmail(email);
     if (guess && value._preset !== "custom" && !value.id) {
       Object.assign(next, {
         _preset: guess.id,
         imap_host: guess.imap_host, imap_port: guess.imap_port, imap_use_ssl: guess.imap_use_ssl,
         smtp_host: guess.smtp_host, smtp_port: guess.smtp_port, smtp_use_tls: guess.smtp_use_tls,
-        username: value.username || email,
       });
     }
     onChange(next);
@@ -277,7 +302,16 @@ function MailboxForm({ value, onChange }) {
         <Field label="SMTP host"><input className="input" value={value.smtp_host} onChange={set("smtp_host")} placeholder="smtp.gmail.com" /></Field>
         <Field label="SMTP port"><input className="input" type="number" value={value.smtp_port} onChange={set("smtp_port")} /></Field>
       </div>
-      <div className="row" style={{ marginBottom: 14 }}><Switch checked={value.smtp_use_tls} onChange={(v) => onChange({ ...value, smtp_use_tls: v })} /><span className="page-sub">Use STARTTLS</span></div>
+      <div className="row" style={{ marginBottom: smtpEncryptionMismatch(value) ? 8 : 14 }}><Switch checked={value.smtp_use_tls} onChange={(v) => onChange({ ...value, smtp_use_tls: v })} /><span className="page-sub">Use STARTTLS</span></div>
+      {smtpEncryptionMismatch(value) && (
+        <div className="card card-pad" style={{ marginBottom: 14, padding: "10px 12px", borderColor: "var(--warning)" }}>
+          <div className="page-sub" style={{ color: "var(--warning)" }}>
+            {Number(value.smtp_port) === 465
+              ? "Port 465 expects a direct SSL connection, not STARTTLS. Turn STARTTLS off, or switch the port to 587."
+              : "Port 587 expects STARTTLS. Turn STARTTLS on, or switch the port to 465."}
+          </div>
+        </div>
+      )}
       <div className="row" style={{ marginBottom: value.use_proxy && isHostedProvider(value.smtp_host) ? 8 : 14 }}><Switch checked={value.use_proxy} onChange={(v) => onChange({ ...value, use_proxy: v })} /><span className="page-sub">Send via proxy — route SMTP through a random proxy from the pool</span></div>
       {value.use_proxy && isHostedProvider(value.smtp_host) && (
         <div className="card card-pad" style={{ marginBottom: 14, padding: "10px 12px", borderColor: "var(--warning)" }}>

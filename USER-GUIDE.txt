@@ -99,7 +99,9 @@ You will be asked for:
 
   Email address     The account you want answered.
 
-  Password          The password for that email account.
+  Password          NOT your normal email password. Almost every provider
+                    needs a separate "app password" instead - see the box
+                    below before you fill this in.
 
   Provider          Pick your email service (Gmail, Outlook, and so on) and
                     the technical boxes below fill themselves in.
@@ -123,17 +125,121 @@ Two optional settings worth knowing:
    replies will ever be sent from this account, and nothing else you set up
    will help. Fix it here first.
 
-A NOTE ON YOUR PASSWORD
-Your email password is scrambled before it is stored, using a method that
+
+*******************************************************************************
+*                                                                             *
+*   READ THIS BEFORE TYPING A PASSWORD                                        *
+*                                                                             *
+*   Your everyday email password will almost certainly NOT work here.         *
+*                                                                             *
+*   Email providers block other programs from signing in with your normal     *
+*   password. Instead they give you a separate "app password" - a one-off     *
+*   code you generate yourself, which works only for this app and can be      *
+*   cancelled at any time without changing your real password.                *
+*                                                                             *
+*   It is free and takes about a minute.                                      *
+*                                                                             *
+*   ALMOST EVERY PROVIDER REQUIRES YOU TO SWITCH ON TWO-STEP VERIFICATION     *
+*   (also called 2FA) FIRST. The app password option simply will not appear   *
+*   until you do. If you cannot find the setting, this is why.                *
+*                                                                             *
+*******************************************************************************
+
+
+HOW TO GET AN APP PASSWORD
+-------------------------------------------------------------------------------
+
+GMAIL / GOOGLE WORKSPACE
+
+  Create it here:
+      https://myaccount.google.com/apppasswords
+
+  Step-by-step help from Google:
+      https://support.google.com/accounts/answer/185833
+
+  Turn on 2-Step Verification first, if you have not already:
+      https://myaccount.google.com/signinoptions/two-step-verification
+
+  Google shows you a 16-character code with spaces, like "abcd efgh ijkl
+  mnop". You can type it with or without the spaces. Copy it immediately -
+  Google will not show it to you again.
+
+
+YAHOO MAIL
+
+  Create it here:
+      https://login.yahoo.com/account/security
+
+  Choose "Generate app password" or "Manage app passwords".
+
+  Step-by-step help from Yahoo:
+      https://help.yahoo.com/kb/SLN15241.html
+
+  Note: Yahoo limits how much mail you can send in a short period. Keep your
+  volumes modest or it will temporarily block sending.
+
+
+ICLOUD MAIL
+
+  Create it here:
+      https://appleid.apple.com
+
+  Go to "Sign-In & Security", then "App-Specific Passwords".
+
+  Step-by-step help from Apple:
+      https://support.apple.com/en-us/102654
+
+
+ZOHO MAIL
+
+  Create it here:
+      https://accounts.zoho.com/home#security/apppasswords
+
+  On free Zoho plans you may also have to switch IMAP on before anything
+  works. That setting is in Zoho Mail's own settings, under Mail Accounts.
+
+
+OUTLOOK / HOTMAIL / MICROSOFT 365  -  PLEASE READ
+
+  ** Microsoft is switching this off. **
+
+  Microsoft is withdrawing the ability for apps to sign in with a password
+  at all, in favour of a newer method that this app does not yet support.
+  On newer Microsoft accounts, sign-in may fail no matter what password you
+  use, including a correctly generated app password. This is a limitation on
+  Microsoft's side, not a fault in your setup.
+
+  If you have an older account, an app password may still work:
+      https://account.microsoft.com/security
+
+  If it does not work, your options are to use a different email provider
+  for automatic replies, or to ask whoever administers your system whether
+  support has been added since.
+
+
+OTHER PROVIDERS
+
+  Look in your email account's own settings for "Security", then "App
+  passwords" or "Application-specific passwords". If your provider has no
+  such feature, your ordinary password will usually work - but you may need
+  to switch on "IMAP access" in their settings first.
+
+
+-------------------------------------------------------------------------------
+
+WHY THIS IS SAFER, NOT RISKIER
+
+An app password only works for this one app. It cannot be used to sign in to
+your email on the web, it cannot change your account settings, and you can
+revoke it at any time from the same page you created it on - without
+touching your real password or disturbing anything else you use.
+
+WHAT HAPPENS TO IT HERE
+
+Whatever you enter is scrambled before it is stored, using a method that
 cannot be reversed. Nobody can read it back out of the system - not other
 users, not an administrator, not even you. If you ever need to change it,
 you simply type the new one in.
-
-IF YOU USE GMAIL, OUTLOOK, OR YAHOO
-These services usually refuse your normal login password and require a
-special "app password" instead. It is free and takes about a minute to
-create in your email account's own security settings. If "Test" fails and
-you are sure the password is right, this is almost always the reason.
 
 
 -------------------------------------------------------------------------------
@@ -564,12 +670,32 @@ A TAG APPEARED IN THE EMAIL AS {{something}}
 
 "TEST" FAILS ON A MAILBOX
 
-  - Check the password. If it is Gmail, Outlook, or Yahoo, you almost
-    certainly need an "app password" rather than your normal one. See
-    PART 2, Step 1.
-  - Check the email address for typos.
-  - If you changed the IMAP or SMTP boxes by hand, re-select your Provider
-    to reset them to the correct values.
+  This is the single most common problem, and the cause is nearly always
+  the password.
+
+  1. Are you using an app password?
+     Your normal email password will be refused by almost every provider.
+     You need a separate app password. Full instructions and links for each
+     provider are in PART 2, Step 1.
+
+  2. Did you switch on two-step verification first?
+     Most providers will not even offer you the app password option until
+     two-step verification is enabled on your account.
+
+  3. Did you copy the whole code?
+     Google's codes are 16 characters and are shown with spaces. Missing a
+     character is easy to do. Generate a fresh one and paste it rather than
+     typing it.
+
+  4. Is it a Microsoft account?
+     Outlook, Hotmail, and Microsoft 365 may fail no matter what you enter.
+     Microsoft is withdrawing password sign-in for apps, and this app cannot
+     use the replacement method yet. See PART 2, Step 1.
+
+  5. Check the email address itself for typos.
+
+  6. If you edited the IMAP or SMTP boxes by hand, re-select your Provider
+     to reset them to the correct values.
 
 
 I HID A PAGE NOTE AND WANT IT BACK
@@ -589,10 +715,18 @@ SOMETHING ELSE
 PART 7  -  PLAIN-ENGLISH GLOSSARY
 ===============================================================================
 
-  APP PASSWORD    A separate password created inside your email account
-                  specifically for other programs to use. Gmail, Outlook,
-                  and Yahoo usually require one instead of your normal
-                  password. Free, and takes about a minute to set up.
+  APP PASSWORD    A separate password you generate inside your own email
+                  account, for one specific program to use. It works only
+                  for that program, cannot be used to sign in on the web,
+                  and can be cancelled at any time without changing your
+                  real password. Nearly every provider now requires one.
+                  Free, and takes about a minute. Links for each provider
+                  are in PART 2, Step 1.
+
+  TWO-STEP        An extra sign-in check on your email account, usually a
+  VERIFICATION    code sent to your phone. Also called 2FA. Most providers
+                  will not let you create an app password until this is
+                  switched on.
 
   ATTACHMENT      A file sent along with an email.
 
@@ -632,6 +766,7 @@ PART 7  -  PLAIN-ENGLISH GLOSSARY
 
   A FEW GOOD HABITS
 
+    - Use an app password, not your normal email password.
     - Always click "Test" after adding or changing a mailbox.
     - Always click "Preview" before relying on a reply template.
     - Use the test box on the Rules page before switching a rule on.

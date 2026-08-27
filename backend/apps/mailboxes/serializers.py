@@ -6,6 +6,9 @@ from .models import Mailbox
 class MailboxSerializer(serializers.ModelSerializer):
     # Password is write-only: accepted on create/update, never returned.
     password = serializers.CharField(write_only=True, required=False, allow_blank=True)
+    # Accepted blank so validate() can fall it back to the email address; the model
+    # field itself stays required, so a mailbox never ends up with no login at all.
+    username = serializers.CharField(required=False, allow_blank=True)
     has_password = serializers.SerializerMethodField()
 
     class Meta:
@@ -24,6 +27,15 @@ class MailboxSerializer(serializers.ModelSerializer):
 
     def get_has_password(self, obj) -> bool:
         return bool(obj.password_encrypted)
+
+    def validate(self, attrs):
+        # A blank username almost always means "same as the address". Store it
+        # that way rather than leaving an empty login to fail at connect time.
+        if not (attrs.get("username") or "").strip():
+            email = attrs.get("email_address") or getattr(self.instance, "email_address", "")
+            if email:
+                attrs["username"] = email
+        return attrs
 
     def create(self, validated_data):
         raw = validated_data.pop("password", "")
