@@ -578,11 +578,32 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; letter-spacing: -0.015em; }
   /* Reclaim topbar space on the smallest screens. */
   .topbar .page-sub, .topbar .badge-live { display: none; }
   .page-title { font-size: 18px; }
+
+  /* The page title must survive the squeeze. .topbar-lead defaults to
+     flex:0 1 auto, so the workspace switcher — whose label alone can run to
+     160px — claimed the row first and collapsed the title to zero width.
+     Give the lead the slack and make the switcher surrender its label instead. */
+  .topbar-lead { flex: 1 1 auto; }
+  .topbar-actions { flex: 0 1 auto; min-width: 0; }
+  .nav-toggle, .topbar-actions .icon-btn { flex-shrink: 0; }
+  .ws-name { max-width: 84px; }
 }
 
 @media (max-width: 860px) {
   .auth-screen { grid-template-columns: 1fr; }
   .auth-brand-side { display: none; }
+}
+
+/* Narrow phones: the workspace label and the page title cannot both fit. The
+   coloured avatar still identifies the workspace, so drop the text and keep the
+   title — you always know what page you are on. */
+@media (max-width: 430px) {
+  .ws-name { display: none; }
+  .ws-trigger { gap: 6px; padding-left: 9px; padding-right: 9px; }
+  .topbar { padding: 12px 12px; gap: 8px; }
+  .topbar-lead { gap: 8px; }
+  .page-title { font-size: 16.5px; }
+  .icon-btn { width: 34px; height: 34px; }
 }
 
 @media (max-width: 480px) {
@@ -650,7 +671,10 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; letter-spacing: -0.015em; }
 /* ---------------- Help dock ---------------- */
 /* Fixed bottom-right on every page. Sits above the toast stack, which is why
    .toast starts at 84px rather than hugging the corner. */
-.hd { position: fixed; right: 24px; bottom: 24px; z-index: 90; }
+/* Sits above page content but below the modal backdrop (50) and the mobile nav
+   backdrop (55) — otherwise the button floats on top of the dimmed overlay while
+   a dialog or the drawer is open, and invites a tap that does the wrong thing. */
+.hd { position: fixed; right: 24px; bottom: 24px; z-index: 45; }
 
 .hd-toggle {
   display: inline-flex; align-items: center; gap: 8px;
