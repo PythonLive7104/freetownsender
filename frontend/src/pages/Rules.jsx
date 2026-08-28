@@ -62,8 +62,8 @@ export default function Rules() {
 
   return (
     <div className="grid">
-      <PageNote id="rules" steps={["Say what to look for in the subject — a word it contains, or an exact match.", "Choose the reply template to send when it matches.", "Rules are checked from the top down and the first match wins, so put the most specific ones first."]}>
-        Rules decide which reply gets sent. Each one looks at the subject line of incoming mail and picks a template to answer with.
+      <PageNote id="rules" steps={["Pick a word to look for in the subject, such as Invoice.", "Pick the message to send when that word turns up.", "The first rule that fits wins, so put your exact ones at the top."]}>
+        Rules decide which message to send back.
       </PageNote>
       <div className="section-head">
         <span className="page-sub">{rows.length} rule{rows.length !== 1 ? "s" : ""} · first match wins (by priority)</span>

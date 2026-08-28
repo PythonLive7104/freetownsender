@@ -25,6 +25,7 @@ const NAV = [
     section: "Tools",
     items: [
       ["/placeholders", "Placeholders", "placeholders"],
+      ["/links", "Links", "links"],
       ["/attachments", "Attachments", "attachments"],
       ["/proxies", "Proxies", "proxy"],
     ],

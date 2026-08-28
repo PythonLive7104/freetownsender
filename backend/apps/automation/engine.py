@@ -712,6 +712,27 @@ def _sender_name(incoming: EmailMessage) -> str:
     return re.sub(r"[._-]+", " ", local).strip().title() or "there"
 
 
+def _already_answered(mailbox: Mailbox, incoming: EmailMessage, rule: Rule) -> bool:
+    """True if this rule has already answered this sender about this thread.
+
+    Keyed on the *incoming* message's thread_key rather than the reply's. A template
+    is free to use a subject of its own ("Thanks for getting in touch"), in which case
+    the reply's own thread_key bears no relation to the conversation it belongs to —
+    matching on it would let the same reply go out over and over.
+
+    Failed and skipped replies do not count, so a genuine delivery failure can still
+    be retried when the sender writes again.
+    """
+    return EmailMessage.objects.filter(
+        mailbox=mailbox,
+        direction=EmailMessage.Direction.OUTGOING,
+        matched_rule=rule,
+        to_addr__iexact=incoming.from_addr,
+        reply_to_message__thread_key=incoming.thread_key,
+        status__in=[EmailMessage.Status.SENT, EmailMessage.Status.SCHEDULED],
+    ).exists()
+
+
 def _maybe_schedule_reply(mailbox: Mailbox, incoming: EmailMessage, config: Config):
     # Only the mailbox workspace's own rules can fire.
     rules = (
@@ -727,6 +748,20 @@ def _maybe_schedule_reply(mailbox: Mailbox, incoming: EmailMessage, config: Conf
         template = rule.template
         if not template.is_active:
             continue
+
+        # One answer per sender, per subject, per rule. Returning rather than trying
+        # the next rule is deliberate: the thread has already been answered, and
+        # falling through would send this person a *different* reply about the same
+        # conversation, which is worse than the duplicate we are preventing.
+        if config.reply_once_per_thread and _already_answered(mailbox, incoming, rule):
+            SystemEvent.log(
+                "engine",
+                f"Already replied to {incoming.from_addr} about “{incoming.thread_key}” "
+                f"via rule '{rule.name}' — not replying again",
+                workspace=mailbox.workspace,
+            )
+            return
+
         context = build_context(incoming, mailbox, rule=rule, template=template)
         subject = render_template(template.subject, context, workspace=mailbox.workspace)
         body = render_template(template.body, context, workspace=mailbox.workspace)

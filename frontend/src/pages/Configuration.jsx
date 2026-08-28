@@ -24,8 +24,8 @@ export default function Configuration() {
 
   return (
     <div className="grid">
-      <PageNote id="configuration" steps={["Checking more often means faster replies, but more load on your mail provider.", "A short delay before replying makes the response feel human rather than instant.", "The defaults are safe — only change them if you have a reason to."]}>
-        How often the app checks for new mail, and how long it waits before replying.
+      <PageNote id="configuration" steps={["Checking more often means faster replies.", "A short wait before replying feels more human.", "These settings are already fine. Change them only if you need to."]}>
+        How often we check your mail, and how quickly we reply.
       </PageNote>
       <div className="card card-pad">
         <div className="between" style={{ marginBottom: 18 }}>
@@ -49,6 +49,17 @@ export default function Configuration() {
           <textarea className="textarea" value={cfg.signature} onChange={(e) => setCfg({ ...cfg, signature: e.target.value })}
             placeholder="— Sent automatically by EndTime Auto-Reply" />
         </Field>
+
+        <div className="row" style={{ marginTop: 4 }}>
+          <Switch checked={cfg.reply_once_per_thread}
+            onChange={(v) => setCfg({ ...cfg, reply_once_per_thread: v })} />
+          <span className="page-sub">Only reply once per conversation</span>
+        </div>
+        <div className="hint-inline">
+          {cfg.reply_once_per_thread
+            ? "A person who writes again about the same subject will not get the same reply a second time. Recommended."
+            : "Every matching email is answered, even if the same person already had this reply about the same subject."}
+        </div>
       </div>
 
       <div className="card card-pad">
@@ -57,6 +68,9 @@ export default function Configuration() {
           <li>Every <b>{cfg.poll_interval_seconds}s</b> the engine checks each active mailbox over IMAP.</li>
           <li>New mail is matched against your active <b>Rules</b> by subject.</li>
           <li>On a match, a reply is drafted from the template and scheduled.</li>
+          {cfg.reply_once_per_thread && (
+            <li>If that rule already answered this sender about this subject, it is skipped.</li>
+          )}
           <li>After the <b>{cfg.reply_delay_minutes}-minute</b> delay, it's sent over SMTP.</li>
           <li>Replies are threaded back to the original sent email by subject.</li>
         </ol>

@@ -50,8 +50,8 @@ export default function Proxies() {
 
   return (
     <div className="grid">
-      <PageNote id="proxies" steps={["Leave this page empty unless you have been given proxy details to use.", "Press Test after adding one to check it works before relying on it."]}>
-        Optional. Sends your mail out through a different internet connection, which some providers require when sending in volume.
+      <PageNote id="proxies" steps={["Leave it empty unless someone gave you proxy details.", "If you do add one, press Test to check it works."]}>
+        Most people never need this page.
       </PageNote>
       <div className="section-head">
         <span className="page-sub">

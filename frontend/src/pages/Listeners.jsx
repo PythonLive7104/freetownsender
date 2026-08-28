@@ -26,8 +26,8 @@ export default function Listeners() {
 
   return (
     <div className="grid">
-      <PageNote id="listeners" steps={["A green mark means that mailbox is being checked on schedule.", "If one stops updating, open Mailboxes and press Test on it."]}>
-        A live view of each mailbox: whether it is being watched right now, when it was last checked, and what has just arrived.
+      <PageNote id="listeners" steps={["A green dot means that mailbox is being checked.", "If one stops, go to Mailbox and press Test on it."]}>
+        Watch your mailboxes being checked, right now.
       </PageNote>
       <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))" }}>
         {mailboxes.map((m) => (

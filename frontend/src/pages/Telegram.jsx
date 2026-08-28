@@ -40,8 +40,8 @@ export default function Telegram() {
 
   return (
     <div className="grid">
-      <PageNote id="telegram" steps={["Create a bot in Telegram and paste its token here.", "Press Send test to check the message reaches you."]}>
-        Optional. Get a message on Telegram when mail arrives or a reply goes out, so you do not have to keep this page open.
+      <PageNote id="telegram" steps={["Make a bot in Telegram and paste its code here.", "Press Send test to check the message reaches you.", "Skip this page if you do not want phone alerts."]}>
+        Get a message on your phone when things happen.
       </PageNote>
       <div className="card card-pad">
         <div className="between" style={{ marginBottom: 18 }}>

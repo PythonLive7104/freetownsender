@@ -681,6 +681,19 @@ CONFIGURATION
                               details here once, instead of in every
                               template.
 
+    Only reply once per       Normally ON, and worth leaving on. It stops the
+    conversation              same person being sent the same reply twice.
+
+                              If somebody writes again about the same subject -
+                              chasing a quote, or replying to your automatic
+                              reply - they are not answered a second time by
+                              that rule. They still get a reply if they write
+                              about something different, and other people
+                              writing about the same subject are unaffected.
+
+                              Switch it off only if you genuinely want every
+                              matching email answered, every time.
+
   The starting values are sensible. Only change them if you have a reason.
 
 LISTENERS
@@ -711,6 +724,14 @@ PLACEHOLDERS
   You give each one a Key (the short name you type, letters and numbers
   only), a Label, an optional Description, and the Static value - the text
   it stands for.
+
+LINKS
+  Short links that count clicks. Use one in a reply and you will see how many
+  people opened it. Useful for measuring whether anyone acts on your automatic
+  replies.
+
+  You give it a Name, a Slug (the short bit that appears in the web address),
+  and the Destination URL - the real page people should land on.
 
 ATTACHMENTS
   Files you can send with a reply, such as a brochure or price list. Upload
@@ -783,6 +804,7 @@ WHAT TO GLANCE AT NOW AND THEN
   Dashboard    Are the "sent" numbers going up as you would expect?
   Listeners    Are your inboxes still being checked regularly?
   Check        Is "Last read" recent on each watched mailbox?
+  Links        Is anyone clicking your tracked links?
 
 If the numbers on the Dashboard stop moving entirely for a day or more,
 something has stopped. See PART 7.
@@ -814,6 +836,17 @@ NO REPLIES ARE BEING SENT AT ALL
      Open Listeners. If it has not been checked for a long time, contact
      whoever administers your system - a background service may have
      stopped.
+
+
+SOMEBODY DID NOT GET A REPLY, BUT THEY SHOULD HAVE
+
+  If they have written to you before about the SAME subject, this is expected.
+  "Only reply once per conversation" on the Configuration page stops the same
+  person receiving the same reply twice.
+
+  To check: look at the Dashboard or Listeners for an earlier reply to that
+  person with that subject. If you want them answered every time, switch the
+  setting off - see PART 5, Configuration.
 
 
 THE WRONG REPLY IS BEING SENT
@@ -952,6 +985,8 @@ PART 8  -  PLAIN-ENGLISH GLOSSARY
                   send back".
 
   SIGNATURE       Text added to the bottom of every automatic reply.
+
+  SLUG            The short readable part at the end of a web address.
 
   SMTP            The technical method used to SEND email. Filled in
                   automatically when you pick your provider.

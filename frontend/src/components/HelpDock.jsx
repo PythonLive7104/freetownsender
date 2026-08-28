@@ -28,6 +28,7 @@ const GROUPS = [
     ["/configuration", "Configuration", "Check frequency, delay, signature", "config"],
     ["/placeholders", "Placeholders", "Your own reusable snippets", "placeholders"],
     ["/attachments", "Attachments", "Files to send with a reply", "attachments"],
+    ["/links", "Links", "Short links that count clicks", "links"],
   ]],
   ["Account", [
     ["/team", "Team", "Share with colleagues", "team"],

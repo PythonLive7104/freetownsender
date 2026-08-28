@@ -146,8 +146,8 @@ export default function Mailboxes() {
 
   return (
     <div className="grid">
-      <PageNote id="mailboxes" steps={["Add an account with its email address and password.", "Press Test to confirm the details are right before relying on it.", "Passwords are encrypted, so nobody can read them back — not even you."]}>
-        The email accounts this app signs into on your behalf. It watches them for new mail and sends replies from them.
+      <PageNote id="mailboxes" steps={["Press Add mailbox, then type the address and password.", "Press Test to make sure it works.", "Your password is locked away. Nobody can read it, not even us."]}>
+        The email accounts this app looks after for you.
       </PageNote>
       <div className="section-head">
         <span className="page-sub">{rows.length} mailbox{rows.length !== 1 ? "es" : ""} configured</span>
@@ -293,8 +293,8 @@ function MailboxForm({ value, onChange }) {
           placeholder="Promotions, Archive" />
       </Field>
       <div className="hint-inline" style={{ marginBottom: 14 }}>
-        The inbox is always scanned. The Spam folder is found automatically, whatever your provider
-        calls it. Comma-separate any extras, using the exact folder names your provider shows.
+        Your inbox and spam folder are already checked. Only add other folders here, spelled
+        exactly as your email provider shows them, separated by commas.
       </div>
 
       <h4 style={{ margin: "10px 0 12px", color: "var(--text-muted)" }}>Outgoing (SMTP)</h4>
@@ -335,8 +335,8 @@ function MailboxForm({ value, onChange }) {
         </Field>
       </div>
       <div className="hint-inline" style={{ marginBottom: 14 }}>
-        Leave either blank to follow the workspace defaults on the Configuration page.
-        Polling faster than 30s on Gmail or Outlook risks rate-limiting.
+        Leave these blank to use the normal settings. Checking Gmail or Outlook more often
+        than every 30 seconds can get the account blocked.
       </div>
 
       <div className="row"><Switch checked={value.is_active} onChange={(v) => onChange({ ...value, is_active: v })} /><span className="page-sub">Active — include in polling</span></div>

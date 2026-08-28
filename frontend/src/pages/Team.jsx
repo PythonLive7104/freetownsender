@@ -69,8 +69,8 @@ export default function Team() {
 
   return (
     <div className="grid" style={{ gap: 22 }}>
-      <PageNote id="team" steps={["Invite someone by their username or email address.", "Switch between workspaces using the menu at the top right."]}>
-        Everything you set up lives in a workspace. Invite people here and they share the same mailboxes, replies and rules.
+      <PageNote id="team" steps={["Invite someone using their email address.", "You will all share the same mailboxes, messages and rules."]}>
+        Let other people use this alongside you.
       </PageNote>
       {/* Members of the current workspace */}
       <div className="card">

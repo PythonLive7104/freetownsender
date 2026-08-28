@@ -64,8 +64,8 @@ export default function Dashboard() {
 
   return (
     <div className="grid" style={{ gap: 22 }}>
-      <PageNote id="dashboard" steps={["The figures at the top cover activity so far.", "Run now sends anything that is already due, without waiting for the next check.", "If something looks wrong, the Listeners page shows what each mailbox is doing right now."]}>
-        A live summary of what your mailboxes have been doing — how many replies went out, what is waiting to send, and what came in.
+      <PageNote id="dashboard" steps={["The boxes at the top count replies sent and mail received.", "Press Run now to send anything that is waiting."]}>
+        What has been happening with your email.
       </PageNote>
       <section className="hero">
         <h2><Icon.sun style={{ width: 30, height: 30 }} /> {greeting(now.getHours())}</h2>

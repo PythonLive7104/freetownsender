@@ -35,8 +35,8 @@ export default function Placeholders() {
 
   return (
     <div className="grid">
-      <PageNote id="placeholders" steps={["Give it a short name and the text it should stand for.", "Use it in a reply by clicking it under the message box.", "Change it here later and every reply using it updates too."]}>
-        Your own reusable snippets. Define something once here — your company name, a phone number — and drop it into any reply.
+      <PageNote id="placeholders" steps={["Save something once, like your phone number.", "Drop it into any message with one click.", "Change it here and every message using it updates."]}>
+        Bits of text you use over and over.
       </PageNote>
       <div className="section-head">
         <span className="page-sub">Use these as <code>{"{{key}}"}</code> inside reply templates</span>

@@ -45,8 +45,8 @@ export default function Security() {
 
   return (
     <div className="grid">
-      <PageNote id="security" steps={["Change your password here at any time.", "The log below shows sign-ins and other notable events."]}>
-        Your password, and a record of important activity on your account.
+      <PageNote id="security" steps={["Change your password here whenever you like.", "The list below shows logins and other events."]}>
+        Your password, and what has happened on your account.
       </PageNote>
       <div className="grid cols-4">
         {cards.map((c) => (

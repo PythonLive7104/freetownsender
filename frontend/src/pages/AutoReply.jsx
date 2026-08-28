@@ -148,8 +148,8 @@ export default function AutoReply() {
 
   return (
     <div className="grid">
-      <PageNote id="auto-reply" steps={["Write your reply and give it a name you will recognise later.", "Click any tag below the message box to drop in the sender's name, the date, and more.", "Press Preview to see exactly what the recipient will get."]}>
-        The messages that get sent back. Write them once here, then a rule decides when each one is used.
+      <PageNote id="auto-reply" steps={["Write your message and give it a name.", "Click a tag under the box to add their name or today's date.", "Press Preview to see what they will get."]}>
+        The messages that get sent back to people.
       </PageNote>
       <div className="section-head">
         <span className="page-sub">{rows.length} reply template{rows.length !== 1 ? "s" : ""}</span>
@@ -211,7 +211,7 @@ export default function AutoReply() {
           />
           {htmlHint && (
             <div className="hint-inline">
-              That looks like HTML. Turn on the HTML switch or it will be sent as literal text.
+              That looks like HTML. Turn on the HTML switch, or people will see the code itself.
             </div>
           )}
           {editing.is_html && (
@@ -219,8 +219,8 @@ export default function AutoReply() {
               <div className="page-sub" style={{ margin: "14px 0 6px" }}>Live preview</div>
               <HtmlPreview html={editing.body} height={260} />
               <div className="hint-inline">
-                Sent as multipart/alternative — a plain-text version is generated automatically
-                for clients that refuse HTML. Placeholders work inside markup.
+                A plain version is made automatically for email apps that cannot show HTML.
+                Your tags still work inside the HTML.
               </div>
             </>
           )}

@@ -59,8 +59,8 @@ export default function Settings() {
 
   return (
     <div className="grid">
-      <PageNote id="settings" steps={["Update your name and email address here.", "Replay the setup guide any time you want a refresher."]}>
-        Your personal details and how the app behaves for you.
+      <PageNote id="settings" steps={["Change your details, then press Save changes.", "Replay the setup guide any time you want a reminder."]}>
+        Your name, your email, and how the app looks.
       </PageNote>
       {/* Personal data */}
       <div className="card card-pad">

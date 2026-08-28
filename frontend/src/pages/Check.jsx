@@ -174,15 +174,8 @@ export default function Check() {
 
   return (
     <div className="grid">
-      <PageNote id="check" steps={[
-        "Add the mailboxes you want to keep an eye on — these are separate from the ones on the Mailbox page.",
-        "Create a check with the words you care about, such as Promotion or a campaign name.",
-        "Turn on Telegram alerts to be told the moment one shows up.",
-      ]}>
-        Keeps an eye on other people's mailboxes and tells you when words you care about appear —
-        both in mail that arrives and in mail they send. These mailboxes are only ever read: nothing
-        here can reply, send, or change an email, and they are kept apart from the mailboxes on the
-        Mailbox page so no automatic reply can ever go out from them.
+      <PageNote id="check" steps={["Add the mailbox you want to keep an eye on.", "Add the words to look for, such as Promotion.", "We only read these mailboxes. We never reply from them."]}>
+        Watch someone else's mailbox for words you care about.
       </PageNote>
 
       {/* Watched mailboxes: their own list, deliberately not the auto-reply ones. */}
@@ -455,9 +448,9 @@ export default function Check() {
                          onChange={(e) => setEditing({ ...editing, max_alerts_per_hour: Number(e.target.value) })} />
                 </Field>
                 <div className="hint-inline">
-                  A campaign can draw hundreds of replies. Past this many in an hour the alerts
-                  pause and the next one tells you how many you missed. Every match is still
-                  recorded on this page.
+                  A busy campaign can bring hundreds of replies. After this many messages in an
+                  hour we stop, then tell you the total next time. Every match still shows
+                  on this page.
                 </div>
               </>
             )}
@@ -482,8 +475,8 @@ export default function Check() {
           </>}
         >
           <div className="hint-inline" style={{ marginBottom: 16 }}>
-            This mailbox is only ever read. There are no sending details to enter, and it will
-            never appear on the Mailbox page or send an automatic reply.
+            This mailbox is only read. There is nothing to fill in for sending, and no reply can
+            ever go out from it.
           </div>
 
           <div className="field-row">
@@ -559,8 +552,8 @@ export default function Check() {
             <button className="btn btn-primary" onClick={runTest}>Check it</button>
           </>}>
           <div className="hint-inline" style={{ marginBottom: 14 }}>
-            Paste a subject or some message text to see whether this check would spot it.
-            Nothing is sent and nothing is recorded.
+            Paste a subject or some text to see if this check would spot it. Nothing is sent
+            and nothing is saved.
           </div>
           <Field label="Subject">
             <input className="input" value={tester.subject}

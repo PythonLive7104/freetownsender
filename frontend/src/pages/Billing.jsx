@@ -52,7 +52,7 @@ export default function Billing() {
 
   return (
     <div className="grid">
-      <PageNote id="billing" steps={["Send your payment to the wallet address shown.", "Paste the transaction reference so the payment can be matched to your account.", "Your plan activates once the payment has been confirmed."]}>
+      <PageNote id="billing" steps={["Send your payment to the address shown.", "Paste the payment reference so we can match it to you.", "Your plan starts once the payment is confirmed."]}>
         Your plan and your payments.
       </PageNote>
       {/* Status */}

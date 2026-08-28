@@ -37,8 +37,8 @@ export default function Links() {
 
   return (
     <div className="grid">
-      <PageNote id="links" steps={["Paste the web address you want people to land on.", "Insert the short link into any reply from the message box.", "The click count on this page updates as people follow it."]}>
-        Short links that count clicks. Use one in a reply and you will see how many people opened it.
+      <PageNote id="links" steps={["Paste the page you want people to open.", "Add the link to any message.", "Come back here to see the clicks."]}>
+        Web links that count how many people click them.
       </PageNote>
       <div className="section-head">
         <span className="page-sub">Reusable links. Insert the tracked URL in templates to count clicks.</span>

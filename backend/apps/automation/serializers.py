@@ -8,6 +8,6 @@ class ConfigSerializer(serializers.ModelSerializer):
         model = Config
         fields = [
             "auto_reply_enabled", "reply_delay_minutes", "poll_interval_seconds",
-            "signature", "updated_at",
+            "signature", "reply_once_per_thread", "updated_at",
         ]
         read_only_fields = ["updated_at"]

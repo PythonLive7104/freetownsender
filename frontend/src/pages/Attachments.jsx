@@ -45,8 +45,8 @@ export default function Attachments() {
 
   return (
     <div className="grid">
-      <PageNote id="attachments" steps={["Upload the file here.", "Attach it to a rule so it goes out with that rule's reply."]}>
-        Files you can send with a reply — a brochure, a price list, a form. Upload once and reuse them.
+      <PageNote id="attachments" steps={["Upload a file, such as a price list.", "Add it to a rule so it goes out with that reply."]}>
+        Files you can send along with a reply.
       </PageNote>
       <div className="section-head">
         <span className="page-sub">Files you can attach to auto-replies (set them per rule on the Rules page).</span>

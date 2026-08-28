@@ -13,6 +13,11 @@ class Config(models.Model):
         default=10, help_text="How often the engine checks mailboxes for new mail"
     )
     signature = models.TextField(blank=True, default="", help_text="Appended to every auto-reply")
+    reply_once_per_thread = models.BooleanField(
+        default=True,
+        help_text="Only answer a given sender once per subject, per rule. Stops the "
+                  "same reply going out again when someone follows up on the same thread.",
+    )
 
     updated_at = models.DateTimeField(auto_now=True)
 
