@@ -12,7 +12,7 @@ from apps.automation.engine import next_tick_seconds, run_once
 
 
 class Command(BaseCommand):
-    help = "Poll mailboxes for new mail and send due auto-replies."
+    help = "Poll mailboxes for new mail, send due auto-replies, and run keyword Checks."
 
     def add_arguments(self, parser):
         parser.add_argument("--once", action="store_true", help="Run a single tick and exit.")
@@ -30,6 +30,20 @@ class Command(BaseCommand):
             )
             for err in stats["errors"]:
                 self.stderr.write(self.style.WARNING(f"  {err}"))
+
+            # Keyword Checks read their own mailboxes over a separate, read-only
+            # connection. Imported here, and wrapped, so the mail engine neither
+            # depends on the checks app nor can be stopped by a fault in it.
+            try:
+                from apps.checks.poller import poll_all
+                watch = poll_all()
+                if watch["mailboxes"]:
+                    self.stdout.write(
+                        f"  checks: mailboxes={watch['mailboxes']} "
+                        f"scanned={watch['scanned']} errors={watch['errors']}"
+                    )
+            except Exception as exc:  # noqa: BLE001
+                self.stderr.write(self.style.WARNING(f"  checks poll failed: {exc}"))
             if not run_forever:
                 break
             # Tick at the shortest cadence any active mailbox asks for; mailboxes on

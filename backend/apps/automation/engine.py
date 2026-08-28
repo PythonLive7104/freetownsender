@@ -489,6 +489,30 @@ def _list_folders(conn) -> list[tuple[str, set[str]]]:
     return folders
 
 
+# The Sent folder is scanned for keyword watches only — never ingested. Ingesting it
+# would file our own outgoing mail as incoming and re-reply to handled threads, which
+# is exactly why "\\sent" sits in _SKIP_FLAGS above.
+_SENT_FLAGS = {"\\sent"}
+_SENT_NAMES = {
+    "sent", "sent items", "sent mail", "sent messages",
+    "[gmail]/sent mail", "[google mail]/sent mail",
+    "inbox.sent", "inbox/sent",
+}
+
+
+def detect_sent_folders(conn) -> list[str]:
+    """Find the account's Sent folder(s), by special-use flag then by name."""
+    by_flag, by_name = [], []
+    for name, flags in _list_folders(conn):
+        if "\\noselect" in flags:
+            continue
+        if flags & _SENT_FLAGS:
+            by_flag.append(name)
+        elif name.lower() in _SENT_NAMES:
+            by_name.append(name)
+    return by_flag or by_name
+
+
 def detect_spam_folders(conn) -> list[str]:
     """Find the account's spam folder(s), by special-use flag then by name."""
     by_flag, by_name = [], []

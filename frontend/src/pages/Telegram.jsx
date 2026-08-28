@@ -65,6 +65,7 @@ export default function Telegram() {
             ["notify_on_sent", "A reply is sent"],
             ["notify_on_received", "New mail is received"],
             ["notify_on_error", "A mailbox or send fails"],
+            ["notify_on_keyword", "A Check spots one of my keywords"],
           ].map(([k, label]) => (
             <div className="row" key={k} style={{ marginBottom: 10 }}>
               <Switch checked={cfg[k]} onChange={(v) => setCfg({ ...cfg, [k]: v })} />

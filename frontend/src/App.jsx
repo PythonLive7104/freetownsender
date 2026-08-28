@@ -18,6 +18,7 @@ import { pageLoaders } from "./pageLoaders";
 const Mailboxes = lazy(pageLoaders["/mailboxes"]);
 const AutoReply = lazy(pageLoaders["/auto-reply"]);
 const Rules = lazy(pageLoaders["/rules"]);
+const Check = lazy(pageLoaders["/check"]);
 const Configuration = lazy(pageLoaders["/configuration"]);
 const Listeners = lazy(pageLoaders["/listeners"]);
 const Placeholders = lazy(pageLoaders["/placeholders"]);
@@ -56,6 +57,7 @@ export default function App() {
             <Route path="mailboxes" element={<Mailboxes />} />
             <Route path="auto-reply" element={<AutoReply />} />
             <Route path="rules" element={<Rules />} />
+            <Route path="check" element={<Check />} />
             <Route path="configuration" element={<Configuration />} />
             <Route path="listeners" element={<Listeners />} />
             <Route path="placeholders" element={<Placeholders />} />

@@ -11,7 +11,7 @@ class TelegramConfigSerializer(serializers.ModelSerializer):
     class Meta:
         model = TelegramConfig
         fields = ["enabled", "bot_token", "has_token", "chat_id",
-                  "notify_on_sent", "notify_on_received", "notify_on_error", "updated_at"]
+                  "notify_on_sent", "notify_on_received", "notify_on_error", "notify_on_keyword", "updated_at"]
         read_only_fields = ["updated_at"]
 
     def get_has_token(self, obj) -> bool:

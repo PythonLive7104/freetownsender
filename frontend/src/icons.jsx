@@ -4,6 +4,7 @@ const Svg = (p) => <svg viewBox="0 0 24 24" {...s} {...p} />;
 
 export const Icon = {
   help: (p) => <Svg {...p}><circle cx="12" cy="12" r="9"/><path d="M9.2 9.2a2.8 2.8 0 0 1 5.4 1c0 1.9-2.6 2.4-2.6 4"/><line x1="12" y1="17.5" x2="12" y2="17.5"/></Svg>,
+  watch: (p) => <Svg {...p}><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/><line x1="11" y1="8.5" x2="11" y2="11.5"/><line x1="11" y1="14" x2="11" y2="14"/></Svg>,
   hourglass: (p) => <Svg {...p}><path d="M6 2h12M6 22h12"/><path d="M8 2v4.5c0 1.2.5 2.3 1.4 3.1L12 12l-2.6 2.4A4.2 4.2 0 0 0 8 17.5V22"/><path d="M16 2v4.5c0 1.2-.5 2.3-1.4 3.1L12 12l2.6 2.4c.9.8 1.4 1.9 1.4 3.1V22"/></Svg>,
   dashboard: (p) => <Svg {...p}><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></Svg>,
   mailbox: (p) => <Svg {...p}><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></Svg>,

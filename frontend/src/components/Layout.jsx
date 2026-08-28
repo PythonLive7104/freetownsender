@@ -18,6 +18,7 @@ const NAV = [
       ["/rules", "Rules", "rules"],
       ["/configuration", "Configuration", "config"],
       ["/listeners", "Listeners", "listeners"],
+      ["/check", "Check", "watch"],
     ],
   },
   {
@@ -47,6 +48,7 @@ const TITLES = {
   "/rules": ["Rules", "Subject-based matching rules"],
   "/configuration": ["Configuration", "Automation engine settings"],
   "/listeners": ["Listeners", "Mailbox polling status & live mail feed"],
+  "/check": ["Check", "Keyword watches across your mailboxes"],
   "/placeholders": ["Placeholders", "Reusable template variables"],
   "/team": ["Team", "Workspace members & sharing"],
   "/billing": ["Subscription", "Your plan & payments"],

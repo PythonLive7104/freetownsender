@@ -22,10 +22,11 @@ CONTENTS
   PART 1   What this app does
   PART 2   Setting up, step by step
   PART 3   Writing replies that fill themselves in
-  PART 4   Every page, explained
-  PART 5   Checking it is working
-  PART 6   When something goes wrong
-  PART 7   Plain-English glossary
+  PART 4   Keeping an eye on other mailboxes
+  PART 5   Every page, explained
+  PART 6   Checking it is working
+  PART 7   When something goes wrong
+  PART 8   Plain-English glossary
 
 
 ===============================================================================
@@ -339,7 +340,7 @@ Your automatic replies are now running. Send yourself a test email with a
 matching subject line and watch it come back.
 
 Do not panic if the reply is not instant. There is a deliberate short delay
-so replies do not look machine-generated. See "Reply delay" in PART 4.
+so replies do not look machine-generated. See "Reply delay" in PART 5.
 
 
 ===============================================================================
@@ -451,7 +452,7 @@ Each of these is different in every single email sent.
 
 YOUR OWN TAGS
 -------------------------------------------------------------------------------
-You can invent your own on the "Placeholders" page - see PART 4. Useful for
+You can invent your own on the "Placeholders" page - see PART 5. Useful for
 anything you repeat often, like your phone number or office address.
 
 IF YOU MISTYPE A TAG, nothing breaks. It simply appears in the sent email
@@ -460,7 +461,175 @@ use Preview before relying on a template.
 
 
 ===============================================================================
-PART 4  -  EVERY PAGE, EXPLAINED
+PART 4  -  KEEPING AN EYE ON OTHER MAILBOXES
+===============================================================================
+
+Everything so far has been about answering your own mail. This part is different:
+it watches somebody else's mailbox and tells you when certain words show up.
+
+The usual reason for it: you want to know what your campaign manager is doing.
+When does a campaign actually go out? When do replies start coming back? Rather
+than asking, you get a message on your phone the moment it happens.
+
+This lives on the "Check" page.
+
+
+-------------------------------------------------------------------------------
+THE MOST IMPORTANT THING TO UNDERSTAND
+-------------------------------------------------------------------------------
+
+Checks NEVER reply to anything.
+
+A watched mailbox is read and nothing more. The app cannot send from it, cannot
+change it, cannot delete from it, and cannot even mark a message as read - unread
+mail stays unread, exactly as its owner left it.
+
+This is also why watched mailboxes are kept on the Check page and NOT on the
+Mailbox page. They are two separate lists on purpose:
+
+    MAILBOX page              CHECK page
+    ------------              ----------
+    Your own accounts         Someone else's accounts
+    Read AND sends replies    Reads only, never sends
+    Needs incoming and        Needs incoming details only
+      outgoing details          (no sending details exist)
+
+Keeping them apart matters. A rule with no mailbox chosen applies to every
+account on the Mailbox page - so if a watched mailbox were listed there, it could
+end up sending automatic replies on someone else's behalf. Because the two lists
+are separate, that cannot happen.
+
+
+-------------------------------------------------------------------------------
+SETTING UP A CHECK
+-------------------------------------------------------------------------------
+
+Two steps. Both are on the Check page.
+
+STEP 1  -  ADD THE MAILBOX TO WATCH
+
+  Click "Add mailbox to watch". You will be asked for:
+
+    Name              A label just for you, such as "Campaign manager".
+
+    Email address     The account you want to keep an eye on.
+
+    Username          Usually the same email address. Leave it blank and the
+                      address is used.
+
+    Password          An app password for that account - see PART 2, Step 1.
+                      You will need the account holder to generate one for you.
+
+    IMAP host / port  Filled in for you for common providers once you type the
+                      address. Port 993 with SSL is standard.
+
+  Then choose which folders to read:
+
+    Inbox     Catches replies coming back from a campaign.
+    Sent      Catches campaigns going out. This is the one that tells you
+              when your campaign manager actually sent something.
+    Spam      Optional, if you want to see what got filtered.
+    Other     Any extra folder names, separated by commas.
+
+  >> Click "Test" before moving on. It confirms the login works and lists
+     exactly which folders will be read. If it fails here, nothing will
+     ever be spotted.
+
+
+STEP 2  -  CREATE THE CHECK
+
+  Click "New check". You will be asked for:
+
+    Name          A label just for you, such as "Campaign tracker".
+
+    Keywords      The words to look out for - Promotion, Black Friday, or a
+                  campaign name. Separate them with commas or new lines. If
+                  ANY one of them appears, that counts as a match.
+
+    Mailboxes     Which watched mailboxes this applies to. Leave it empty and
+                  it covers all of them, including any you add later.
+
+    Where to look Subject line, message body, or both. Both is usually right -
+                  a reply often mentions the campaign in the text rather than
+                  the subject.
+
+    Which mail    Mail that arrives (replies coming back), mail that is sent
+                  (campaigns going out), or both.
+
+    Telegram      Whether to be messaged when something matches.
+
+  >> Click "Test" on the check to try it. Paste in a subject or some text and
+     it tells you whether that would have been spotted. Nothing is sent and
+     nothing is recorded - it is just a dry run.
+
+
+-------------------------------------------------------------------------------
+WHAT YOU GET
+-------------------------------------------------------------------------------
+
+Every match is listed on the Check page under "Recent matches": when it
+happened, which keyword was spotted, whether the mail was sent or received,
+which mailbox, the subject, and a short piece of the surrounding text so you can
+see the context without opening the email.
+
+If Telegram is switched on, you also get a message like this:
+
+    🔎 Campaign tracker - matched "Promotion"
+    📤 sent · Campaign manager
+    July Promotion - final call
+    to customers@list.com
+
+    … our biggest Promotion of the year ends Friday …
+
+The 📤 means it was sent; 📥 means it arrived.
+
+
+-------------------------------------------------------------------------------
+ABOUT THE FLOOD OF ALERTS
+-------------------------------------------------------------------------------
+
+A campaign can draw hundreds of replies within minutes. Without a limit your
+phone would be unusable.
+
+So each check has a setting: "Most alerts per hour". Once that many alerts have
+been sent in an hour, the check goes quiet and simply counts what it is missing.
+The next alert that does go out tells you the total:
+
+    (+47 more matched while alerts were paused)
+
+Two things worth knowing:
+
+  - EVERY match is still recorded on the Check page. Only the phone
+    notifications are limited, never the record.
+  - The default is 20 an hour. Lower it if you only want a heads-up; raise it
+    if you want to see everything as it happens.
+
+
+-------------------------------------------------------------------------------
+A WORKED EXAMPLE
+-------------------------------------------------------------------------------
+
+You want to know when your campaign manager sends the summer promotion, and
+when people start replying to it.
+
+  1. Add his mailbox on the Check page. Switch on both Inbox and Sent.
+     Press Test.
+
+  2. Create a check called "Summer promotion" with the keyword: Summer Sale
+
+  3. Leave both "mail that arrives" and "mail that is sent" switched on.
+
+  4. Turn on Telegram alerts.
+
+From then on:
+
+  - The moment he sends the campaign, you get a 📤 alert.
+  - As people reply, you get 📥 alerts - up to your hourly limit.
+  - The Check page shows the full list at any time.
+
+
+===============================================================================
+PART 5  -  EVERY PAGE, EXPLAINED
 ===============================================================================
 
 The menu on the left is grouped into four sections.
@@ -519,6 +688,14 @@ LISTENERS
   checked, when each was last checked, and what has just arrived. This is
   the page to open when you want to see the system working, or to work out
   why it is not.
+
+CHECK
+  Keeps an eye on other people's mailboxes and tells you when words you care
+  about turn up - in mail they receive and in mail they send. Used for
+  tracking campaigns without having to ask anyone.
+
+  Watched mailboxes are added here, not on the Mailbox page, and they are only
+  ever read: no reply can ever be sent from one. Covered fully in PART 4.
 
 
 -------------------------------------------------------------------------------
@@ -590,7 +767,7 @@ SETTINGS
 
 
 ===============================================================================
-PART 5  -  CHECKING IT IS WORKING
+PART 6  -  CHECKING IT IS WORKING
 ===============================================================================
 
 THE ONE-MINUTE TEST
@@ -605,13 +782,14 @@ WHAT TO GLANCE AT NOW AND THEN
 
   Dashboard    Are the "sent" numbers going up as you would expect?
   Listeners    Are your inboxes still being checked regularly?
+  Check        Is "Last read" recent on each watched mailbox?
 
 If the numbers on the Dashboard stop moving entirely for a day or more,
-something has stopped. See PART 6.
+something has stopped. See PART 7.
 
 
 ===============================================================================
-PART 6  -  WHEN SOMETHING GOES WRONG
+PART 7  -  WHEN SOMETHING GOES WRONG
 ===============================================================================
 
 NO REPLIES ARE BEING SENT AT ALL
@@ -695,6 +873,39 @@ I HID A PAGE NOTE AND WANT IT BACK
   go to Settings and click "Show again" beside "Page tips".
 
 
+A CHECK IS NOT SPOTTING ANYTHING
+
+  1. Is the watched mailbox connecting?
+     Open the Check page and press "Test" on the mailbox. It should list the
+     folders it can read. If it fails, the password is the usual cause - see
+     PART 2, Step 1 about app passwords.
+
+  2. Is the right folder switched on?
+     To catch campaigns GOING OUT you need "Sent" switched on for that
+     mailbox. To catch replies COMING BACK you need "Inbox".
+
+  3. Would the keyword actually match?
+     Press "Test" on the check itself, paste in a real subject, and see. Watch
+     for spelling differences.
+
+  4. Is the check switched on, and does it cover that mailbox?
+     An inactive check does nothing. If you picked specific mailboxes, only
+     those are watched.
+
+  5. Has it read the mailbox yet?
+     Press "Read now" on the mailbox rather than waiting for the next cycle.
+
+  Note: when a mailbox is first added, only its most recent few messages are
+  read. This is deliberate - otherwise adding a mailbox would alert you about
+  every campaign it has ever sent. Matches begin from new mail onwards.
+
+
+I AM GETTING TOO MANY TELEGRAM ALERTS
+
+  Lower "Most alerts per hour" on that check. Every match is still recorded on
+  the Check page - only the phone messages are limited. See PART 4.
+
+
 SOMETHING ELSE
 
   Take a screenshot, note what you were doing, and send it to whoever
@@ -703,7 +914,7 @@ SOMETHING ELSE
 
 
 ===============================================================================
-PART 7  -  PLAIN-ENGLISH GLOSSARY
+PART 8  -  PLAIN-ENGLISH GLOSSARY
 ===============================================================================
 
   APP PASSWORD    A separate password you generate inside your own email
@@ -720,6 +931,9 @@ PART 7  -  PLAIN-ENGLISH GLOSSARY
                   switched on.
 
   ATTACHMENT      A file sent along with an email.
+
+  CHECK           A keyword watch. Tells you when chosen words appear in a
+                  watched mailbox. Never replies to anything.
 
   IMAP            The technical method used to READ your incoming email.
                   Filled in automatically when you pick your provider.
@@ -747,6 +961,10 @@ PART 7  -  PLAIN-ENGLISH GLOSSARY
 
   TEMPLATE        A saved reply message.
 
+  WATCHED         Someone else's mailbox that a Check keeps an eye on. Added
+  MAILBOX         on the Check page, read only, and kept separate from the
+                  accounts on the Mailbox page so it can never send anything.
+
   WORKSPACE       A shared space holding your inboxes, replies, and rules.
                   Everyone invited to it sees the same things.
 
@@ -760,6 +978,7 @@ PART 7  -  PLAIN-ENGLISH GLOSSARY
     - Always click "Preview" before relying on a reply template.
     - Use the test box on the Rules page before switching a rule on.
     - Put specific rules above general ones.
+    - Press "Test" on a watched mailbox before relying on a Check.
     - Check which workspace you are in before making changes.
 
 ===============================================================================

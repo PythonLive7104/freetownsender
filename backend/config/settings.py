@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "apps.links",
     "apps.attachments",
     "apps.notifications",
+    "apps.checks",
     "apps.security",
     "apps.billing",
 ]

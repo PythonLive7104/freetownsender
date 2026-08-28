@@ -34,7 +34,7 @@ def send_message(token: str, chat_id: str, text: str) -> tuple[bool, str]:
 def notify(workspace, event: str, text: str) -> None:
     """Fire a notification to `workspace`'s Telegram if enabled and opted in.
 
-    `event` is one of: sent, received, error. Failures are swallowed so a
+    `event` is one of: sent, received, error, keyword. Failures are swallowed so a
     notification problem never breaks the mail engine.
     """
     try:
@@ -44,7 +44,7 @@ def notify(workspace, event: str, text: str) -> None:
         if not cfg.enabled:
             return
         opt = {"sent": cfg.notify_on_sent, "received": cfg.notify_on_received,
-               "error": cfg.notify_on_error}.get(event, False)
+               "error": cfg.notify_on_error, "keyword": cfg.notify_on_keyword}.get(event, False)
         if not opt:
             return
         send_message(cfg.bot_token, cfg.chat_id, text)

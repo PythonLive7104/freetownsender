@@ -22,6 +22,7 @@ const GROUPS = [
   ["See it working", [
     ["/listeners", "Listeners", "Live view of each inbox", "listeners"],
     ["/", "Dashboard", "Totals and recent activity", "dashboard"],
+    ["/check", "Check", "Keyword alerts across your mailboxes", "watch"],
   ]],
   ["Adjust", [
     ["/configuration", "Configuration", "Check frequency, delay, signature", "config"],

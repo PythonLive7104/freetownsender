@@ -4,6 +4,8 @@ from django.contrib import admin
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
+from apps.checks.views import WatchHitViewSet, WatchMailboxViewSet, WatchViewSet
+
 from apps.accounts.views import (
     complete_onboarding,
     delete_account,
@@ -36,6 +38,9 @@ router.register("links", LinkViewSet)
 router.register("attachments", AttachmentViewSet)
 router.register("proxies", ProxyViewSet)
 router.register("events", SystemEventViewSet)
+router.register("watches", WatchViewSet)
+router.register("watch-mailboxes", WatchMailboxViewSet)
+router.register("watch-hits", WatchHitViewSet, basename="watch-hits")
 router.register("workspaces", WorkspaceViewSet, basename="workspaces")
 
 urlpatterns = [

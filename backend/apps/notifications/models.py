@@ -14,6 +14,7 @@ class TelegramConfig(models.Model):
     notify_on_sent = models.BooleanField(default=True)
     notify_on_received = models.BooleanField(default=False)
     notify_on_error = models.BooleanField(default=True)
+    notify_on_keyword = models.BooleanField(default=True)
 
     updated_at = models.DateTimeField(auto_now=True)
 

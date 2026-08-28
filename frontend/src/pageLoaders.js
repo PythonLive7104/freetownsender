@@ -8,6 +8,7 @@ export const pageLoaders = {
   "/mailboxes": () => import("./pages/Mailboxes"),
   "/auto-reply": () => import("./pages/AutoReply"),
   "/rules": () => import("./pages/Rules"),
+  "/check": () => import("./pages/Check"),
   "/configuration": () => import("./pages/Configuration"),
   "/listeners": () => import("./pages/Listeners"),
   "/placeholders": () => import("./pages/Placeholders"),

@@ -81,6 +81,28 @@ export const api = {
     poll: (id) => request(`/mailboxes/${id}/poll/`, { method: "POST" }),
   },
 
+  watchMailboxes: {
+    list: () => request("/watch-mailboxes/").then(list),
+    create: (body) => request("/watch-mailboxes/", { method: "POST", body }),
+    update: (id, body) => request(`/watch-mailboxes/${id}/`, { method: "PATCH", body }),
+    remove: (id) => request(`/watch-mailboxes/${id}/`, { method: "DELETE" }),
+    test: (id) => request(`/watch-mailboxes/${id}/test/`, { method: "POST" }),
+    poll: (id) => request(`/watch-mailboxes/${id}/poll/`, { method: "POST" }),
+  },
+
+  watches: {
+    list: () => request("/watches/").then(list),
+    create: (body) => request("/watches/", { method: "POST", body }),
+    update: (id, body) => request(`/watches/${id}/`, { method: "PATCH", body }),
+    remove: (id) => request(`/watches/${id}/`, { method: "DELETE" }),
+    test: (id, body) => request(`/watches/${id}/test/`, { method: "POST", body }),
+  },
+
+  watchHits: {
+    list: (params) => request("/watch-hits/", { params }).then(list),
+    remove: (id) => request(`/watch-hits/${id}/`, { method: "DELETE" }),
+  },
+
   rules: {
     list: () => request("/rules/").then(list),
     create: (body) => request("/rules/", { method: "POST", body }),
