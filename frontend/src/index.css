@@ -102,9 +102,30 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; letter-spacing: -0.015em; }
   position: sticky;
   top: 0;
   height: 100vh;
+  /* The column is a fixed 100vh, so anything past it must scroll inside rather
+     than spill out of view — see .nav-scroll. */
+  overflow: hidden;
 }
 
-.brand { display: flex; align-items: center; gap: 11px; padding: 4px 8px 20px; }
+/* Takes the leftover height and scrolls on its own. min-height:0 is required:
+   a flex child defaults to min-height:auto, which refuses to shrink below its
+   content and pushes the footer — status, username, Logout — off the bottom of
+   the screen where it cannot be reached. */
+.nav-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* Room for the active item's edge marker, which sits at left: -12px. */
+  padding-left: 12px;
+  margin-left: -12px;
+  scrollbar-width: thin;
+}
+.nav-scroll::-webkit-scrollbar { width: 6px; }
+.nav-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 6px; }
+.nav-scroll:hover::-webkit-scrollbar-thumb { background: var(--border-strong); }
+
+.brand { display: flex; align-items: center; gap: 11px; padding: 4px 8px 20px; flex-shrink: 0; }
 .brand-logo {
   width: 34px; height: 34px; border-radius: var(--radius);
   display: grid; place-items: center;
@@ -150,7 +171,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; letter-spacing: -0.015em; }
 }
 .nav-item.active svg { color: var(--brand); opacity: 1; }
 
-.sidebar-footer { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--border); }
+.sidebar-footer { flex-shrink: 0; padding-top: 14px; border-top: 1px solid var(--border); }
 .status-dot {
   display: inline-block; width: 7px; height: 7px; border-radius: 50%;
   background: var(--success); box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 20%, transparent);
@@ -521,7 +542,6 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; letter-spacing: -0.015em; }
   .sidebar {
     position: fixed; top: 0; left: 0; z-index: 60;
     width: 264px; max-width: 84vw; height: 100vh;
-    overflow-y: auto;
     transform: translateX(-100%);
     transition: transform 0.22s ease;
   }

@@ -535,14 +535,6 @@ PLACEHOLDERS
   only), a Label, an optional Description, and the Static value - the text
   it stands for.
 
-LINKS
-  Short web links that count clicks. Put one in a reply and this page shows
-  you how many people opened it. Useful for measuring whether anyone acts on
-  your automatic replies.
-
-  You give it a Name, a Slug (the short bit that appears in the web address),
-  and the Destination URL - the real page people should land on.
-
 ATTACHMENTS
   Files you can send with a reply, such as a brochure or price list. Upload
   once here, then attach it to a rule so it goes out with that rule's reply.
@@ -613,7 +605,6 @@ WHAT TO GLANCE AT NOW AND THEN
 
   Dashboard    Are the "sent" numbers going up as you would expect?
   Listeners    Are your inboxes still being checked regularly?
-  Links        Is anyone clicking your tracked links?
 
 If the numbers on the Dashboard stop moving entirely for a day or more,
 something has stopped. See PART 6.
@@ -747,8 +738,6 @@ PART 7  -  PLAIN-ENGLISH GLOSSARY
                   send back".
 
   SIGNATURE       Text added to the bottom of every automatic reply.
-
-  SLUG            The short readable part at the end of a web address.
 
   SMTP            The technical method used to SEND email. Filled in
                   automatically when you pick your provider.

@@ -24,7 +24,6 @@ const NAV = [
     section: "Tools",
     items: [
       ["/placeholders", "Placeholders", "placeholders"],
-      ["/links", "Links", "links"],
       ["/attachments", "Attachments", "attachments"],
       ["/proxies", "Proxies", "proxy"],
     ],
@@ -99,6 +98,9 @@ export default function Layout() {
           </button>
         </div>
 
+        {/* Only the nav scrolls; the footer below stays pinned so Logout is always
+            reachable, even where the menu is taller than the window. */}
+        <div className="nav-scroll">
         {NAV.map((group) => (
           <div className="nav-group" key={group.section}>
             <div className="nav-label">{group.section}</div>
@@ -122,6 +124,7 @@ export default function Layout() {
             })}
           </div>
         ))}
+        </div>
 
         <div className="sidebar-footer">
           <div className="nav-item" style={{ pointerEvents: "none" }}>

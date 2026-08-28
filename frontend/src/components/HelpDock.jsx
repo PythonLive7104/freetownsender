@@ -4,8 +4,7 @@ import { Icon } from "../icons";
 
 /* A floating map of the app, anchored bottom-right on every page.
 
-   The problem it solves: the sidebar lists fifteen pages alphabetically-ish within
-   groups, which tells you what exists but not what to do first. New users routinely
+   The problem it solves: the sidebar lists the pages grouped by category, which tells you what exists but not what to do first. New users routinely
    write a reply template, see nothing happen, and give up — because the rule that
    actually switches automation on is a separate page they never reached.
 
@@ -28,7 +27,6 @@ const GROUPS = [
     ["/configuration", "Configuration", "Check frequency, delay, signature", "config"],
     ["/placeholders", "Placeholders", "Your own reusable snippets", "placeholders"],
     ["/attachments", "Attachments", "Files to send with a reply", "attachments"],
-    ["/links", "Links", "Short links that count clicks", "links"],
   ]],
   ["Account", [
     ["/team", "Team", "Share with colleagues", "team"],
